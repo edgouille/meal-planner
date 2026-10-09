@@ -4,7 +4,7 @@ Ce document décrit le flux de contribution au projet MealPlanner. Le projet est
 
 ## Proposer une modification
 
-1. Partez de la branche principale à jour et créez une branche dédiée à votre changement.
+1. Partez de la branche `develop` et créez une branche dédiée à votre changement.
 2. Choisissez un nom explicite, par exemple `feat/meal-planning` ou `fix/recipe-validation`.
 3. Limitez chaque changement à un objectif cohérent et gardez les deux parties de l'application synchronisées lorsque leurs contrats évoluent.
 4. Vérifiez les changements avant de les partager et indiquez les vérifications effectuées. Si une vérification n'a pas pu être faite, précisez-le.
