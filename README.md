@@ -32,3 +32,10 @@ Ce projet a également pour objectif de mettre en pratique les bonnes pratiques 
 Le développement sera réalisé progressivement, en commençant par un **MVP (Minimum Viable Product)** intégrant les fonctionnalités essentielles de l'application. De nouvelles fonctionnalités pourront ensuite être ajoutées en fonction des besoins et des évolutions du projet.
 
 MealPlanner constitue ainsi un projet d'application web fullstack visant à combiner une expérience utilisateur intuitive avec une architecture technique claire et maintenable.
+
+## Installation
+
+Pour installer et lancer le projet, suivez les instructions des README de chaque partie :
+
+* [Frontend](front/README.md) : installation et lancement de l'application React.
+* [Backend](back/README.md) : installation et lancement de l'API Node.js et Express.
