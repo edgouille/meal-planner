@@ -31,7 +31,7 @@ npm run build
 npm run preview
 ```
 
-The current interface is a starter page. REST API integration and persistent data management will be added as the backend is developed. Never commit secrets or personal data.
+The current interface is the public home page (`src/features/home/`), styled with the "Potager pétillant" design tokens in `src/styles.css`. REST API integration and persistent data management will be added as the backend is developed. Never commit secrets or personal data.
 
 ## Related documentation
 

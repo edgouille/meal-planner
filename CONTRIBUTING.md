@@ -14,7 +14,8 @@ npm run dev
 
 Open the URL displayed by Vite. `npm ci` installs the versions recorded in `package-lock.json`. To add or update a dependency, use `npm install` and include changes to both `package.json` and `package-lock.json` in your contribution.
 
-The backend provides an Express and TypeScript runtime, PostgreSQL, migrations, the Ciqual import, demo data, and a connection pool. Business endpoints are still to be implemented. Read [back/README.md](back/README.md) for setup and [ARCHI.md](ARCHI.md) for the frontend and backend structure. The current frontend does not require a `.env` file.
+
+The backend already provides PostgreSQL, migrations, the Ciqual import, demo data, and a connection pool. Its HTTP API is not implemented yet. Read [back/README.md](back/README.md) for database setup and [ARCHI.md](ARCHI.md) for the target frontend and backend structure. The current frontend does not require a `.env` file.
 
 ## Branches and commits
 

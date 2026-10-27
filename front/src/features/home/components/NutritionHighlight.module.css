@@ -1,0 +1,91 @@
+.section {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 88px 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 56px;
+  scroll-margin-top: 68px;
+}
+
+.kicker {
+  margin-bottom: 10px;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.copy h2 {
+  font-size: clamp(30px, 4vw, 42px);
+}
+
+.text {
+  margin-top: 18px;
+  color: var(--color-muted);
+  font-size: 18px;
+}
+
+.figures {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.figure {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.figure dd {
+  min-width: 3.4em;
+  margin: 0;
+  color: var(--color-primary);
+  font-family: var(--font-display);
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.figure:nth-child(2) dd {
+  color: #c99a12;
+}
+
+.figure:nth-child(3) dd {
+  color: var(--color-radish);
+}
+
+.figure dt {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+@media (max-width: 860px) {
+  .section {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: 64px 16px;
+  }
+
+  .figure {
+    padding: 16px 18px;
+  }
+
+  .figure dd {
+    font-size: 30px;
+  }
+}

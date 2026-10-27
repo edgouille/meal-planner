@@ -37,7 +37,7 @@ Technical goals include:
 
 Development will be incremental, starting with an **MVP (Minimum Viable Product)** covering the application's core features. Additional features may follow as needs evolve.
 
-MealPlanner aims to combine an intuitive user experience with a clear, maintainable fullstack architecture. The repository contains a starter frontend, an Express and TypeScript API runtime, and the PostgreSQL data layer, including migrations, the Ciqual import, and demo data. Business endpoints and user-facing features are still to be implemented.
+MealPlanner aims to combine an intuitive user experience with a clear, maintainable fullstack architecture. The current repository contains a starter frontend and the PostgreSQL data layer, including migrations, the Ciqual import, and demo data. The HTTP API and user-facing features are still to be implemented.
 
 ## Setup
 

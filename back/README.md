@@ -1,6 +1,6 @@
 # Backend — MealPlanner
 
-The MealPlanner backend provides an Express 5 and TypeScript API runtime alongside PostgreSQL migrations, the Ciqual import, demo data, and the shared database pool. Business API endpoints and authentication are still to be implemented.
+The MealPlanner backend will expose the REST API consumed by the frontend and handle business rules and relational data persistence. The database, migrations, Ciqual import, demo seed, and connection pool are available; the HTTP API has not been implemented yet.
 
 ## Planned API responsibilities
 
@@ -243,7 +243,9 @@ The demo password's scrypt hashing format is temporary and must be aligned with 
 
 ## Related documentation
 
-- [Architecture](../ARCHI.md): module boundaries, shared HTTP behavior, and API contracts.
+
+- [Architecture](../ARCHI.md): backend modules, shared HTTP behavior, data ownership, and OpenAPI generation.
+
 
 - [Project README](../README.md): product overview, requirements reference, and scope.
 - [Development guidelines](../GUIDELINES.md): conventions shared by the frontend and backend.

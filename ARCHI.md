@@ -4,7 +4,7 @@ This is the shared architecture for frontend and backend contributions. Follow i
 
 ## Current implementation and target
 
-The repository contains a React starter, an Express and TypeScript API runtime, shared request validation and errors, health/readiness endpoints, PostgreSQL migrations, the Ciqual import, demo data, and a database connection pool. Business modules, authentication, and API documentation are still to be implemented. The structure below defines how new features must be organized.
+The repository currently contains a React starter, TypeScript configuration, PostgreSQL migrations, the Ciqual import, demo data, and a database connection pool. Express routes, authentication, API documentation, and the feature folders below are not implemented yet.
 
 The trees in this document describe the target structure. Create files when needed by a feature; do not generate empty layers or move existing working code just to match a diagram.
 
@@ -118,6 +118,10 @@ back/
       nutrition/
     shared/
       http/
+        api-error.ts
+        validate.ts
+        error-handler.ts
+        not-found.ts
         api-module.ts
         errors.ts
         validate-request.ts
