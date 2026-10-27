@@ -1,10 +1,7 @@
+import { HomePage } from './features/home/index.ts'
+
 function App() {
-  return (
-    <div className="app-shell">
-      <h1>Meal Planner</h1>
-      <p>Welcome to the Meal Planner application!</p>
-    </div>
-  )
+  return <HomePage />
 }
 
 export default App

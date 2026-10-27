@@ -1,0 +1,90 @@
+.section {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 88px 24px;
+  scroll-margin-top: 68px;
+}
+
+.heading {
+  max-width: 620px;
+  margin-bottom: 44px;
+}
+
+.kicker {
+  margin-bottom: 10px;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.heading h2 {
+  font-size: clamp(30px, 4vw, 42px);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.card {
+  padding: 28px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-raised);
+}
+
+.card h3 {
+  margin: 20px 0 10px;
+  font-size: 21px;
+}
+
+.card p {
+  color: var(--color-muted);
+}
+
+.icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  font-size: 26px;
+}
+
+.green {
+  background: var(--color-meal-lunch);
+}
+
+.sun {
+  background: var(--color-meal-breakfast);
+}
+
+.radish {
+  background: var(--color-meal-dinner);
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: 64px 16px;
+  }
+
+  .card {
+    padding: 22px;
+  }
+}
