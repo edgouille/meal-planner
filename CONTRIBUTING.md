@@ -1,10 +1,10 @@
-# Contribuer à MealPlanner
+# Contributing to MealPlanner
 
-## Installer le projet
+## Setting up the project
 
-Prérequis : Git, Node.js 22 et npm. Le fichier `.nvmrc` indique la version Node utilisée par la CI. Si vous utilisez nvm, lancez `nvm install` puis `nvm use` ; sous Windows avec nvm-windows, utilisez `nvm install 22` puis `nvm use 22`.
+Prerequisites: Git, Node.js 22, and npm. The `.nvmrc` file specifies the Node.js version used by CI. With nvm, run `nvm install` followed by `nvm use`. On Windows with nvm-windows, run `nvm install 22` followed by `nvm use 22`.
 
-Depuis la racine du dépôt :
+From the repository root:
 
 ```bash
 cd front
@@ -12,13 +12,13 @@ npm ci
 npm run dev
 ```
 
-Ouvrez l'adresse affichée par Vite. `npm ci` utilise les versions du fichier `package-lock.json`. Pour ajouter ou mettre à jour une dépendance, utilisez `npm install` et incluez les modifications de `package.json` et de `package-lock.json` dans la contribution.
+Open the URL displayed by Vite. `npm ci` installs the versions recorded in `package-lock.json`. To add or update a dependency, use `npm install` and include changes to both `package.json` and `package-lock.json` in your contribution.
 
-Le backend contient actuellement sa documentation uniquement : aucune API, base de données, commande de lancement ou migration n'est encore disponible. Consultez [back/README.md](back/README.md) avant de le développer. Aucun fichier `.env` n'est nécessaire pour le frontend actuel.
+The backend currently contains documentation only: no API, database, startup command, or migration is available yet. Read [back/README.md](back/README.md) before working on it. The current frontend does not require a `.env` file.
 
-## Branches et commits
+## Branches and commits
 
-Le workflow cible utilise `dev` pour l'intégration et `main` pour les versions validées. Créez d'abord `dev` depuis `main` sur GitHub si elle n'existe pas. Travaillez ensuite sur une branche dédiée depuis `dev` :
+The workflow uses `dev` for integration and `main` for validated releases. If `dev` does not exist yet, create it from `main` on GitHub. Then create a dedicated working branch from `dev`:
 
 ```bash
 git switch dev
@@ -26,60 +26,63 @@ git pull --ff-only
 git switch -c feat/recipe-form
 ```
 
-Utilisez `feat/`, `fix/`, `docs/`, `chore/` ou `refactor/` avec un nom court en minuscules séparé par des tirets. Les branches créées par Codex utilisent le préfixe `codex/`.
+Use `feat/`, `fix/`, `docs/`, `chore/`, or `refactor/` with a short English name in lowercase, separating words with hyphens. Branches created by Codex use the `codex/` prefix.
 
-Les messages de commit suivent la forme `type(scope): description`, par exemple `feat(front): ajouter le formulaire de recette` ou `docs: préciser l'installation`. Le scope est facultatif. Ajoutez la référence Jira dans la description du commit ou de la PR lorsqu'un ticket existe.
+Write commit messages in English using `type(scope): description`, for example `feat(front): add the recipe form` or `docs: clarify setup instructions`. The scope is optional. Include the Jira reference in the commit or PR description when a ticket exists.
 
-Gardez chaque contribution centrée sur un objectif. Suivez [GUIDELINES.md](GUIDELINES.md) pour l'architecture, les données et la qualité du code. Respectez le style du fichier existant et les réglages de `.editorconfig`.
+Keep each contribution focused on one objective. Follow [GUIDELINES.md](GUIDELINES.md) for architecture, data handling, and code quality. Match the existing file's style and the `.editorconfig` settings. Write all repository documentation in English.
 
-## Vérifier une contribution
+## Checking a contribution
 
-Dans `front/`, lancez :
+From `front/`, run:
 
 ```bash
 npm ci
 npm run build
 ```
 
-Le build vérifie TypeScript puis produit l'application avec Vite. Pour une modification de l'interface, lancez aussi `npm run dev` et vérifiez le comportement dans le navigateur, notamment sur une largeur mobile. Décrivez les étapes et le résultat dans la PR.
+The build checks TypeScript and then builds the application with Vite. For interface changes, also run `npm run dev` and check the behavior in a browser, including at a mobile viewport width. Describe the steps and results in the PR.
 
-Le dépôt ne dispose pas encore de commande de lint ni de tests automatisés. Lorsqu'ils seront ajoutés, documentez leurs commandes ici et ajoutez-les à la CI. Pour une évolution du backend, fournissez ses commandes d'installation et de vérification dans son README.
+The repository does not yet include a lint command or automated tests. When adding them, document the commands here and include them in CI. For backend changes, provide installation and validation commands in its README.
 
-## Ouvrir une pull request
+## Opening a pull request
 
-Poussez votre branche puis ouvrez une PR vers `dev`. Utilisez **Rebase and merge** ou **Squash and merge** pour intégrer la contribution. Pour publier une version validée, ouvrez une PR de `dev` vers `main` et utilisez **Create a merge commit**. Seule la branche `dev` de ce dépôt doit alimenter `main` ; cette restriction devient automatique une fois le contrôle `Main source is dev` publié et rendu obligatoire. Le modèle proposé demande le besoin, la solution et les vérifications. Ajoutez les captures utiles, les impacts sur l'API, les données et la configuration, ainsi que le ticket Jira éventuel.
+Push your working branch and open a PR targeting `dev`. Use **Rebase and merge** or **Squash and merge** to integrate the contribution. To release a validated version, open a PR from `dev` to `main` and use **Create a merge commit**. Only this repository's `dev` branch should feed into `main`; this restriction is enforced automatically once the `Main source is dev` check is published and required.
 
-Avant de fusionner :
+The PR template asks for context, changes, and validation. Include useful screenshots, any impact on the API, data, or configuration, and the Jira ticket when applicable.
 
-- La vérification `Frontend build` doit réussir.
-- Les discussions de revue doivent être résolues.
-- La documentation et les exemples de configuration doivent être à jour.
-- Une revue par une autre personne est attendue lorsque l'équipe compte plusieurs contributeurs.
+Before merging:
 
-Supprimez les branches de travail après fusion. Conservez `dev` et `main`. Après une publication, continuez les contributions depuis `dev`. Le commit de merge présent uniquement sur `main` est attendu : ne fusionnez pas `main` dans `dev`, dont l'historique doit rester linéaire.
+- The `Frontend build` check must pass.
+- Review conversations must be resolved.
+- Documentation and configuration examples must be up to date.
+- A review by another contributor is expected when working as a team.
 
-## Secrets et configuration
+Delete working branches after merging. Keep `dev` and `main`. After a release, continue contributions from `dev`. A merge commit that exists only on `main` is expected: do not merge `main` into `dev`, which must keep a linear history.
 
-Ne commitez aucun mot de passe, jeton, fichier `.env` ou donnée réelle d'utilisateur. Si une configuration devient nécessaire, fournissez un `.env.example` avec des valeurs fictives et documentez chaque variable. Toute variable frontend `VITE_*` est exposée au navigateur : elle ne doit contenir aucun secret.
+## Secrets and configuration
 
-## Activer les règles sur GitHub
+Never commit passwords, tokens, `.env` files, or real user data. If configuration becomes necessary, provide a `.env.example` file with dummy values and document each variable. Frontend `VITE_*` variables are exposed to the browser and must never contain secrets.
 
-Les fichiers du dépôt préparent la CI et le modèle de PR. Ils n'activent pas à eux seuls la protection de branche. Un administrateur doit configurer les règles du dépôt dans les paramètres GitHub :
+## Configuring GitHub rules
 
-1. Dans **Settings → General → Pull Requests**, autoriser **Allow merge commits**, **Allow rebase merging** et **Allow squash merging**.
-2. Dans **Settings → Rules → Rulesets**, créer deux **branch rulesets** actifs, ciblant exactement `dev` et `main` respectivement, sans acteur autorisé à contourner les règles.
-3. Pour les deux branches : activer **Require a pull request before merging**, **Require conversation resolution before merging**, **Block force pushes** et **Restrict deletions**. Ne pas activer **Restrict updates**, qui bloquerait aussi les intégrations pour les personnes sans droit de contournement.
-4. Dans la règle de PR de `dev`, ne garder que **Rebase** et **Squash** parmi les méthodes de fusion autorisées. Activer **Require linear history**. Exiger le contrôle **Frontend build** après publication du workflow.
-5. Dans la règle de PR de `main`, ne garder que **Merge** parmi les méthodes autorisées. Laisser **Require linear history** désactivé. Exiger **Frontend build** et **Main source is dev**.
-6. Ne pas exiger que la branche source soit à jour avec `main` (**Require branches to be up to date before merging**) : le commit de merge de chaque publication reste sur `main` et ne doit pas obliger à le réintégrer dans `dev`.
-7. Pour une équipe, exiger au moins une approbation et invalider les approbations après de nouveaux commits. Pour un projet solo, ne pas imposer une approbation que l'auteur ne peut pas se donner.
+Repository files provide CI workflows and a PR template. They do not enable branch protection by themselves. A repository administrator must configure the following settings on GitHub:
 
-Les contrôles doivent avoir été exécutés avant de pouvoir être sélectionnés. Le workflow `main-source.yml` doit être présent sur `main` pour vérifier les PR entrantes. Il utilise `pull_request_target` sans récupérer ni exécuter le code proposé : il vérifie uniquement le nom de la branche source et son dépôt d'origine. Le contrôle doit être obligatoire dans le ruleset de `main` pour bloquer les autres sources.
+1. Under **Settings → General → Pull Requests**, enable **Allow merge commits**, **Allow rebase merging**, and **Allow squash merging**.
+2. Under **Settings → Rules → Rulesets**, create two active **branch rulesets**, targeting exactly `dev` and `main`, with no actors allowed to bypass the rules.
+3. For both branches, enable **Require a pull request before merging**, **Require conversation resolution before merging**, **Block force pushes**, and **Restrict deletions**. Leave **Restrict updates** disabled: it would also block integrations for contributors without bypass permissions.
+4. In the PR rule for `dev`, allow only **Rebase** and **Squash**. Enable **Require linear history**. Require the **Frontend build** check once its workflow has been published.
+5. In the PR rule for `main`, allow only **Merge**. Leave **Require linear history** disabled. Require **Frontend build** and **Main source is dev** once their workflows have been published.
+6. Leave **Require branches to be up to date before merging** disabled on `main`: each release's merge commit stays on `main` and should not have to be integrated back into `dev`.
+7. For a team, require at least one approval and dismiss stale approvals after new commits. For a solo project, avoid requiring an approval that the author cannot give themselves.
 
-Ordre de mise en place : publier ces fichiers sur `main` pour l'installation initiale, créer `dev` depuis cette version, déclencher les contrôles avec une PR de travail vers `dev` puis une PR `dev` vers `main`, et sélectionner les contrôles obligatoires dans les rulesets. Si des protections existent déjà, passer par le processus autorisé par ces protections pour publier la configuration.
+Run the checks before selecting them as required checks. The `main-source.yml` workflow must be present on `main` to validate incoming PRs. It uses `pull_request_target` without checking out or executing proposed code: it only checks the source branch name and repository. Make this check mandatory in the `main` ruleset to block other sources.
 
-La disponibilité des protections dépend de l'offre GitHub et de la visibilité du dépôt. Les règles de nommage des branches de travail et de commits restent des conventions d'équipe. La CI vérifie le build frontend et la provenance des PR vers `main`.
+For an initial setup, publish the workflow files to `main`, create `dev` from that version if needed, run the checks with a working-branch PR into `dev` and a `dev` PR into `main`, then select the required checks in the rulesets. If protections already exist, use their authorized contribution process to publish the configuration before requiring the checks.
 
-Référence : [configurer une protection de branche (documentation GitHub)](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule).
+Branch protection availability depends on the GitHub plan and repository visibility. Working-branch names and commit messages remain team conventions. CI checks the frontend build and the source of PRs targeting `main`.
 
-Référence pour les méthodes par branche : [règles disponibles dans les rulesets GitHub](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
+References:
+
+- [Managing a branch protection rule (GitHub documentation)](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule).
+- [Available rules for rulesets, including merge methods per branch (GitHub documentation)](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
