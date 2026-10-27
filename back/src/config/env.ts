@@ -57,6 +57,7 @@ export function readEnvironment(source: NodeJS.ProcessEnv = process.env) {
     databaseUrl: requireDatabaseUrl(source.DATABASE_URL),
     frontendOrigin,
     shutdownTimeoutMs: positiveInteger(source.SHUTDOWN_TIMEOUT_MS, 10_000, 'SHUTDOWN_TIMEOUT_MS'),
+    readinessTimeoutMs: positiveInteger(source.READINESS_TIMEOUT_MS, 2_000, 'READINESS_TIMEOUT_MS'),
   }
 }
 

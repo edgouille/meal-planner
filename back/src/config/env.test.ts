@@ -9,6 +9,7 @@ test('validates explicit configuration and supplies development defaults', () =>
   assert.equal(config.port, 3000)
   assert.equal(config.host, '127.0.0.1')
   assert.equal(config.frontendOrigin, 'http://localhost:5173')
+  assert.equal(config.readinessTimeoutMs, 2000)
   assert.equal(readEnvironment({ ...base, PORT: '4000' }).port, 4000)
 })
 
@@ -16,6 +17,7 @@ test('rejects invalid configuration without exposing credentials', () => {
   for (const invalid of [
     { PORT: '0' }, { PORT: '65536' }, { PORT: '3.5' }, { PORT: '' },
     { NODE_ENV: 'unknown' }, { HOST: '' }, { SHUTDOWN_TIMEOUT_MS: '-1' },
+    { READINESS_TIMEOUT_MS: '0' }, { READINESS_TIMEOUT_MS: 'not-a-number' },
     { FRONTEND_ORIGIN: 'http://localhost:5173/path' },
     { FRONTEND_ORIGIN: 'http://user:secret@localhost' },
     { DATABASE_URL: 'http://user:secret@localhost/test' },

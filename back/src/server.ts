@@ -4,6 +4,7 @@ import type { Server } from 'node:http'
 import { createApp } from './app.ts'
 import { loadRuntimeConfig, type RuntimeConfig } from './config/env.ts'
 import type { ApiModule } from './shared/http/api-module.ts'
+import { createHealthModule } from './modules/health/index.ts'
 
 interface ServerOptions {
   config: RuntimeConfig
@@ -72,7 +73,8 @@ async function main() {
   const config = loadRuntimeConfig()
   // Validate runtime configuration before importing the database module.
   const { pool } = await import('./db/pool.ts')
-  const runtime = await startServer({ config, closeDatabase: () => pool.end() })
+  const health = createHealthModule({ pool, readinessTimeoutMs: config.readinessTimeoutMs })
+  const runtime = await startServer({ config, modules: [health], closeDatabase: () => pool.end() })
   const address = runtime.server.address()
   const port = typeof address === 'object' && address ? address.port : config.port
   console.info(`MealPlanner API listening on http://${config.host}:${port}`)

@@ -91,6 +91,7 @@ The runtime loads `.env` once without overwriting environment variables already 
 | `DATABASE_URL` | PostgreSQL URL including a host and database name | Required |
 | `FRONTEND_ORIGIN` | Frontend HTTP(S) origin, without a path | `http://localhost:5173` |
 | `SHUTDOWN_TIMEOUT_MS` | Maximum graceful shutdown time | `10000` |
+| `READINESS_TIMEOUT_MS` | Total database readiness deadline, in milliseconds | `2000` |
 
 `SIGINT` and `SIGTERM` stop accepting requests, let active requests finish, and close the shared PostgreSQL pool. A shutdown that exceeds the deadline terminates the process with an error.
 
@@ -117,6 +118,27 @@ Errors have this public shape:
 Validation and malformed JSON return `400`, unknown routes return `404`, oversized JSON returns `413`, and unexpected errors return a generic `500`. Use `ApiError` for intentional public errors, including `401`, `403`, `404`, and `409`. Its messages and details must be safe for clients. `errorResponseSchema` provides the shared Zod contract and inferred TypeScript type.
 
 Every response carries a generated `X-Request-Id`. Logs contain only that ID, the request method, status, duration, and event name. They omit URLs, bodies, query strings, headers, exception messages, SQL, passwords, and tokens. Unexpected exceptions create a correlated `request_error` event; do not add raw error objects to it.
+
+### Health and readiness
+
+| Endpoint | Success | Failure | Database access |
+|---|---|---|---|
+| `GET /health` | `200`, `{ "data": { "status": "ok" } }` | Process is unreachable | None |
+| `GET /ready` | `200`, `{ "data": { "status": "ready" } }` | `503`, error code `DATABASE_UNAVAILABLE` | `SELECT 1` through the shared pool |
+
+Use `/health` to check process liveness and `/ready` to decide whether it can serve database-backed requests. Both endpoints are public. A failed database must not cause liveness to fail. Readiness does not verify migrations, catalog imports, or domain data.
+
+`READINESS_TIMEOUT_MS` bounds the complete readiness check, including waiting for a pooled connection. A timed-out active query destroys its connection; a connection acquired after the deadline is released without running SQL. The shared pool also limits connection establishment and pool acquisition to two seconds. Errors never expose SQL, credentials, connection strings, or stack traces.
+
+The health module's public `index.ts` exports its factory, response schemas and types, and `healthContract` endpoint metadata. Contracts can be imported without environment configuration or database access. OpenAPI generation and Swagger UI will be added in SCRUM-54; `/docs` and `/openapi.json` are not available yet.
+
+`npm test` runs isolated HTTP checks, including database failure and timeout cases. To also check against a real PostgreSQL instance, set `TEST_DATABASE_URL` to a dedicated database whose name ends in `_test`, then run `npm test`. This optional check only executes `SELECT 1`; it does not migrate, reset, seed, or import data. Never use a personal or production database for tests.
+
+```powershell
+$env:TEST_DATABASE_URL = 'postgres://test:test@localhost:55433/mealplanner_test'
+npm test
+Remove-Item Env:TEST_DATABASE_URL
+```
 
 ## Database
 
