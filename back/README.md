@@ -1,25 +1,25 @@
 # Backend — MealPlanner
 
-Le backend de MealPlanner expose l'API REST utilisée par le frontend et gère les règles métier ainsi que la persistance des données relationnelles.
+The MealPlanner backend will expose the REST API consumed by the frontend and handle business rules and relational data persistence. This directory currently contains documentation only; the API has not been implemented yet.
 
-## Responsabilités
+## Planned responsibilities
 
-- Gérer l'inscription et l'authentification des utilisateurs.
-- Fournir les opérations nécessaires à la création, la consultation et la gestion des recettes.
-- Enregistrer et restituer le planning hebdomadaire, avec une recette associée à un jour et à un moment de la journée.
-- Générer les listes de courses à partir des ingrédients des repas planifiés et permettre le suivi des produits achetés.
-- Appliquer les règles d'accès afin que chaque utilisateur ne puisse consulter et modifier que ses propres données.
-- Valider les entrées et retourner des erreurs cohérentes au frontend.
+- Handle user registration and authentication.
+- Provide operations to create, view, and manage recipes.
+- Save and retrieve weekly meal plans, associating a recipe with a day and a mealtime.
+- Generate shopping lists from the ingredients in planned meals and track purchased products.
+- Enforce access rules so users can only view and modify their own data.
+- Validate input and return consistent errors to the frontend.
 
-## API et données
+## API and data
 
-L'API constitue le lien entre le frontend et le backend. Toute évolution de ses routes, paramètres ou formats de données doit être documentée et répercutée dans le frontend si nécessaire. Les données sont stockées dans une base relationnelle, conformément aux objectifs du projet.
+The API connects the frontend and backend. Document any changes to routes, parameters, or data formats and update the frontend when needed. Data will be stored in a relational database, in line with the project's technical goals.
 
-## Technologies
+## Planned stack
 
-Le backend est développé avec Node.js, TypeScript et Express. Il expose l'API REST consommée par le frontend React et TypeScript.
+The backend will use Node.js, TypeScript, and Express to expose the REST API consumed by the React and TypeScript frontend.
 
-## Configuration et lancement
+## Configuration and startup
 
 Prérequis : Node.js 22 et Docker. La base PostgreSQL 16 tourne dans un conteneur.
 
@@ -112,8 +112,8 @@ Pour faire évoluer le schéma, ajoutez un nouveau fichier numéroté (par exemp
 
 Le hachage du mot de passe de démo (scrypt) est provisoire ; il devra suivre le format choisi pour l'authentification.
 
-## Documentation associée
+## Related documentation
 
-- [README du projet](../README.md) : présentation et périmètre fonctionnel.
-- [Consignes de développement](../GUIDELINES.md) : conventions communes au frontend et au backend.
-- [Contribution](../CONTRIBUTION.md) : préparation d'une contribution et d'une pull request.
+- [Project README](../README.md): product overview, requirements reference, and scope.
+- [Development guidelines](../GUIDELINES.md): conventions shared by the frontend and backend.
+- [Contributing guide](../CONTRIBUTING.md): setup, Git conventions, and preparing a pull request.

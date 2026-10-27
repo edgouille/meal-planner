@@ -1,0 +1,26 @@
+name: Main source policy
+
+# Runs the policy from the trusted base branch, without checking out PR code.
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, reopened, synchronize, edited, ready_for_review]
+
+permissions: {}
+
+jobs:
+  source:
+    name: Main source is dev
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require dev from this repository
+        env:
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPOSITORY: ${{ github.repository }}
+        run: |
+          if [ "$HEAD_BRANCH" != "dev" ] || [ "$HEAD_REPOSITORY" != "$BASE_REPOSITORY" ]; then
+            echo "::error::Only the dev branch from this repository can be merged into main."
+            exit 1
+          fi

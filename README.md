@@ -1,41 +1,49 @@
 # MealPlanner 🍽️
 
-## Présentation du projet
+## Project overview
 
-**MealPlanner** est une application web de planification des repas conçue pour simplifier l'organisation des repas au quotidien. Elle permet aux utilisateurs de centraliser leurs recettes, de planifier leurs repas sur la semaine et de générer automatiquement des listes de courses à partir des ingrédients nécessaires.
+**MealPlanner** is a meal planning web application designed to simplify everyday meal organization. It aims to let users keep their recipes in one place, plan meals for the week, and automatically generate shopping lists from the ingredients they need.
 
-L'objectif du projet est de proposer une solution simple et intuitive pour mieux organiser son alimentation, gagner du temps dans la préparation des repas et faciliter les courses.
+The goal is to provide a simple, intuitive way to organize meals, save preparation time, and make grocery shopping easier.
 
-## Fonctionnalités principales
+## Planned features
 
-* **Gestion des recettes :** créer, consulter et gérer ses recettes en renseignant les ingrédients, les quantités et les étapes de préparation.
-* **Planification des repas :** organiser ses repas dans un planning hebdomadaire en associant des recettes aux différents jours et moments de la journée.
-* **Listes de courses :** générer une liste de courses à partir des repas planifiés et cocher les produits au fur et à mesure des achats.
-* **Gestion des utilisateurs :** créer un compte et se connecter pour accéder à ses recettes, son planning et ses listes de courses personnelles.
+- **Recipe management:** create, view, and manage recipes with ingredients, quantities, and preparation steps.
+- **Meal planning:** organize meals in a weekly schedule by assigning recipes to specific days and mealtimes.
+- **Shopping lists:** generate a list from planned meals and check off products while shopping.
+- **User accounts:** sign up and log in to access personal recipes, meal plans, and shopping lists.
 
-## Objectifs techniques
+## Personas and requirements
 
-Ce projet a également pour objectif de mettre en pratique les bonnes pratiques de développement logiciel, notamment :
+The [Figma board: personas and needs overview](https://www.figma.com/board/WucPuPSbzpIg3WhUiQpsuD/Personas-%E2%80%94-Alex--Margeritte-et-Lois?node-id=3-2) is the reference for the project's personas and user needs.
 
-* **Frontend :** React avec TypeScript.
-* **Backend :** Node.js avec TypeScript et Express.
+## Technical goals
 
-* La séparation entre le frontend et le backend.
-* La conception et l'utilisation d'une API REST.
-* La gestion et la persistance des données dans une base de données relationnelle.
-* L'utilisation de Git et de GitHub pour le versionnement du code.
-* L'organisation du développement avec Jira, à travers des EPICS, des User Stories et des tâches techniques.
-* La mise en place d'un workflow de développement et d'automatisations.
+The project also provides an opportunity to practice software development principles using:
 
-## Périmètre du projet
+- **Frontend:** React with TypeScript.
+- **Planned backend:** Node.js with TypeScript and Express.
 
-Le développement sera réalisé progressivement, en commençant par un **MVP (Minimum Viable Product)** intégrant les fonctionnalités essentielles de l'application. De nouvelles fonctionnalités pourront ensuite être ajoutées en fonction des besoins et des évolutions du projet.
+Technical goals include:
 
-MealPlanner constitue ainsi un projet d'application web fullstack visant à combiner une expérience utilisateur intuitive avec une architecture technique claire et maintenable.
+- Separating frontend and backend responsibilities.
+- Designing and consuming a REST API.
+- Managing and persisting data in a relational database.
+- Using Git and GitHub for version control.
+- Organizing development in Jira with epics, user stories, and technical tasks.
+- Setting up a development workflow and automation.
 
-## Installation
+## Project scope
 
-Pour installer et lancer le projet, suivez les instructions des README de chaque partie :
+Development will be incremental, starting with an **MVP (Minimum Viable Product)** covering the application's core features. Additional features may follow as needs evolve.
 
-* [Frontend](front/README.md) : installation et lancement de l'application React.
-* [Backend](back/README.md) : installation et lancement de l'API Node.js et Express.
+MealPlanner aims to combine an intuitive user experience with a clear, maintainable fullstack architecture. The current repository contains a starter frontend and backend documentation; the planned features and API are still to be implemented.
+
+## Setup
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for prerequisites, setup instructions, Git conventions, checks, and GitHub rules to configure. Development guidelines are in [GUIDELINES.md](GUIDELINES.md).
+
+For details about each part of the project, see:
+
+- [Frontend](front/README.md): installing and running the React application.
+- [Backend](back/README.md): planned API responsibilities and setup documentation to complete when implementation begins.
