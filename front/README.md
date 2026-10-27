@@ -18,7 +18,7 @@ Le frontend présente les données et les actions disponibles à l'utilisateur, 
 Le frontend utilise React, TypeScript et Vite. Node.js et npm sont requis. Le backend associé utilise Node.js, TypeScript et Express.
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
@@ -35,4 +35,4 @@ L'interface actuelle est une première maquette interactive. Les connexions à l
 
 - [README du projet](../README.md) : présentation et périmètre fonctionnel.
 - [Consignes de développement](../GUIDELINES.md) : conventions communes au frontend et au backend.
-- [Contribution](../CONTRIBUTION.md) : préparation d'une contribution et d'une pull request.
+- [Contribution](../CONTRIBUTING.md) : installation, règles Git et préparation d'une pull request.

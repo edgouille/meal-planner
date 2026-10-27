@@ -27,4 +27,4 @@ Les prérequis, variables d'environnement, commandes de lancement et procédures
 
 - [README du projet](../README.md) : présentation et périmètre fonctionnel.
 - [Consignes de développement](../GUIDELINES.md) : conventions communes au frontend et au backend.
-- [Contribution](../CONTRIBUTION.md) : préparation d'une contribution et d'une pull request.
+- [Contribution](../CONTRIBUTING.md) : installation, règles Git et préparation d'une pull request.
