@@ -9,24 +9,24 @@ const demoUser = {
   displayName: 'Compte démo',
 }
 
-// kcal pour 100 g ou 100 ml (valeurs moyennes indicatives), poids d'une pièce ou d'une botte en grammes.
-const ingredients: Array<[name: string, category: string, kcalPer100: number, unitWeightG: number | null]> = [
-  ['Pois chiches', 'Épicerie', 139, null],
-  ['Lait de coco', 'Épicerie', 197, null],
-  ['Pâte de curry', 'Épicerie', 110, null],
-  ['Quinoa', 'Épicerie', 368, null],
-  ['Lentilles vertes', 'Épicerie', 352, null],
-  ['Flocons d’avoine', 'Épicerie', 379, null],
-  ['Huile d’olive', 'Épicerie', 884, null],
-  ['Potimarron', 'Fruits et légumes', 34, 1200],
-  ['Oignon', 'Fruits et légumes', 40, 150],
-  ['Pomme', 'Fruits et légumes', 52, 180],
-  ['Concombre', 'Fruits et légumes', 15, 300],
-  ['Coriandre', 'Fruits et légumes', 23, 30],
-  ['Feta', 'Crèmerie', 264, null],
-  ['Lait', 'Crèmerie', 46, null],
-  ['Bouillon de légumes', 'Épicerie', 7, null],
-]
+// Ingrédients des recettes de démo, pris dans le catalogue Ciqual (npm run db:import-ciqual) :
+// nom court utilisé ci-dessous → [code Ciqual, poids d'une pièce ou d'une botte en grammes].
+const ingredients: Record<string, [ciqualCode: number, unitWeightG: number | null]> = {
+  'Pois chiches': [20532, null], // Pois chiche, appertisé, égoutté
+  'Lait de coco': [18041, null],
+  'Curry en poudre': [11005, null],
+  'Quinoa': [9340, null], // Quinoa, cru
+  'Flocons d’avoine': [32140, null],
+  'Huile d’olive': [17270, null], // Huile d'olive vierge extra
+  'Potimarron': [20132, 1200], // Potimarron, chair sans peau, cru
+  'Oignon': [20034, 150], // Oignon, cru
+  'Pomme': [13039, 180], // Pomme, chair et peau, crue
+  'Concombre': [20019, 300], // Concombre, chair et peau, cru
+  'Coriandre': [11094, 30], // Coriandre, fraiche
+  'Feta': [12066, null],
+  'Lait': [19033, null], // Lait demi-écrémé (aliment moyen)
+  'Bouillon de légumes': [25948, null], // Bouillon de légumes, déshydraté reconstitué
+}
 
 type Recipe = {
   title: string
@@ -46,13 +46,13 @@ const recipes: Recipe[] = [
     ingredients: [
       ['Pois chiches', 400, 'g'],
       ['Lait de coco', 400, 'ml'],
-      ['Pâte de curry', 2, 'tbsp'],
+      ['Curry en poudre', 1, 'tbsp'],
       ['Oignon', 1, 'piece'],
       ['Coriandre', 1, 'bunch'],
     ],
     steps: [
       'Émincer l’oignon et le faire revenir 5 minutes.',
-      'Ajouter la pâte de curry, puis les pois chiches égouttés.',
+      'Ajouter le curry, puis les pois chiches égouttés.',
       'Verser le lait de coco et laisser mijoter 20 minutes.',
       'Parsemer de coriandre avant de servir.',
     ],
@@ -140,17 +140,21 @@ function toIsoDate(date: Date) {
   return `${date.getFullYear()}-${month}-${day}`
 }
 
-async function seedIngredients(client: PoolClient) {
-  for (const [name, category, kcalPer100, unitWeightG] of ingredients) {
-    await client.query(
-      `INSERT INTO ingredients (name, category, kcal_per_100, unit_weight_g) VALUES ($1, $2, $3, $4)
-       ON CONFLICT ((lower(name))) DO UPDATE
-       SET category = EXCLUDED.category, kcal_per_100 = EXCLUDED.kcal_per_100, unit_weight_g = EXCLUDED.unit_weight_g`,
-      [name, category, kcalPer100, unitWeightG],
+// Renseigne le poids à la pièce des ingrédients de démo et renvoie leur id par nom court.
+async function findIngredients(client: PoolClient) {
+  const ids = new Map<string, string>()
+  for (const [name, [ciqualCode, unitWeightG]] of Object.entries(ingredients)) {
+    const { rows: [ingredient] } = await client.query<{ id: string }>(
+      `UPDATE ingredients SET unit_weight_g = coalesce($2, unit_weight_g)
+       WHERE ciqual_code = $1 RETURNING id`,
+      [ciqualCode, unitWeightG],
     )
+    if (!ingredient) {
+      throw new Error(`Aliment Ciqual ${ciqualCode} (${name}) introuvable. Lancez d'abord npm run db:import-ciqual.`)
+    }
+    ids.set(name, ingredient.id)
   }
-  const { rows } = await client.query<{ id: string; name: string }>('SELECT id, name FROM ingredients')
-  return new Map(rows.map((row) => [row.name, row.id]))
+  return ids
 }
 
 async function seed() {
@@ -158,7 +162,7 @@ async function seed() {
   try {
     await client.query('BEGIN')
 
-    const ingredientIds = await seedIngredients(client)
+    const ingredientIds = await findIngredients(client)
 
     await client.query('DELETE FROM users WHERE lower(email) = lower($1)', [demoUser.email])
     const { rows: [user] } = await client.query<{ id: string }>(
