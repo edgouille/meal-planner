@@ -35,11 +35,17 @@ Le compte de démo est `demo@mealplanner.local` (mot de passe `mealplanner-demo`
 
 | Commande | Effet |
 |---|---|
-| `npm run db:up` / `npm run db:down` | Démarre ou arrête le conteneur (les données sont conservées dans un volume Docker) |
+| `npm run db:up` / `npm run db:down` | Démarre ou arrête la base et son interface web (les données sont conservées dans un volume Docker) |
 | `npm run db:migrate` | Applique les migrations de `migrations/` qui ne l'ont pas encore été |
 | `npm run db:seed` | Recrée les données de démo |
 | `npm run db:reset` | Vide la base, puis relance les migrations et le seed (développement uniquement) |
 | `npm run typecheck` | Vérifie les types TypeScript |
+
+### Consulter la base
+
+`npm run db:up` démarre aussi [pgweb](https://github.com/sosedoff/pgweb), une interface web disponible sur http://localhost:8081. Elle permet de parcourir les tables et les vues, de modifier des lignes et de lancer des requêtes SQL, sans aucune connexion à configurer. Elle n'est accessible que depuis votre machine.
+
+Pour une console SQL dans le terminal : `docker compose exec db psql -U mealplanner -d mealplanner`.
 
 Le port 5433 évite un conflit avec un PostgreSQL déjà installé. Pour en changer, modifiez `DB_PORT` et `DATABASE_URL` dans `.env`.
 

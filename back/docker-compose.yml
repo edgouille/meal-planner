@@ -15,5 +15,17 @@ services:
       timeout: 3s
       retries: 15
 
+  # Interface web pour consulter et modifier la base : http://localhost:8081
+  pgweb:
+    image: ghcr.io/sosedoff/pgweb:0.16.2
+    environment:
+      DATABASE_URL: postgres://${DB_USER:-mealplanner}:${DB_PASSWORD:-mealplanner}@db:5432/${DB_NAME:-mealplanner}?sslmode=disable
+    ports:
+      # Accessible uniquement depuis cette machine.
+      - "127.0.0.1:${PGWEB_PORT:-8081}:8081"
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   db-data:
