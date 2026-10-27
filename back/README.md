@@ -2,7 +2,7 @@
 
 The MealPlanner backend will expose the REST API consumed by the frontend and handle business rules and relational data persistence. The database, migrations, Ciqual import, demo seed, and connection pool are available; the HTTP API has not been implemented yet.
 
-## Planned responsibilities
+## Planned API responsibilities
 
 - Handle user registration and authentication.
 - Provide operations to create, view, and manage recipes.
@@ -13,108 +13,239 @@ The MealPlanner backend will expose the REST API consumed by the frontend and ha
 
 ## API and data
 
-The API connects the frontend and backend. Document any changes to routes, parameters, or data formats and update the frontend when needed. Data will be stored in a relational database, in line with the project's technical goals.
+The API will connect the frontend and backend. Document any changes to routes, parameters, or data formats and update the frontend when needed. Data is stored in a PostgreSQL relational database.
 
-## Planned stack
+## Stack
 
-The backend will use Node.js, TypeScript, and Express to expose the REST API consumed by the React and TypeScript frontend.
+The backend uses Node.js 22, TypeScript, Express 5, and PostgreSQL 16. It retains ES modules and the `NodeNext` TypeScript configuration.
 
 ## Configuration and startup
 
-Prérequis : Node.js 22 et Docker. La base PostgreSQL 16 tourne dans un conteneur.
+Prerequisites: Node.js 22, npm, and Docker with Docker Compose. PostgreSQL 16 runs in a container.
+
+Run these commands from the `back/` directory:
 
 ```bash
-cp .env.example .env   # valeurs de développement, à adapter si besoin
-npm install
-npm run db:up          # démarre PostgreSQL sur le port 5433
-npm run db:migrate         # crée les tables
-npm run db:import-ciqual   # remplit le catalogue d'ingrédients (table Ciqual)
-npm run db:seed            # ajoute le compte de démo et ses données
+cp .env.example .env       # Development values; adjust as needed
+npm ci
+npm run db:up             # Start PostgreSQL on port 5433 and pgweb
+npm run db:migrate        # Create the database schema
+npm run db:import-ciqual  # Populate the ingredient catalog
+npm run db:seed           # Create the demo account and its data
 ```
 
-Le compte de démo est `demo@mealplanner.local` (mot de passe `mealplanner-demo`). Il contient quatre recettes et un planning pour la semaine en cours. Le seed peut être relancé : il recrée ce compte à chaque fois.
+In PowerShell, use `Copy-Item .env.example .env` to copy the configuration file.
 
-| Commande | Effet |
+The demo account is `demo@mealplanner.local`, with the password `mealplanner-demo`. It includes four recipes and a meal plan for the current week. The seed can be run again: each execution deletes and recreates this demo account and its data.
+
+| Command | Purpose |
 |---|---|
-| `npm run db:up` / `npm run db:down` | Démarre ou arrête la base et son interface web (les données sont conservées dans un volume Docker) |
-| `npm run db:migrate` | Applique les migrations de `migrations/` qui ne l'ont pas encore été |
-| `npm run db:import-ciqual` | Importe ou met à jour les aliments Ciqual et leurs valeurs nutritionnelles depuis `data/` |
-| `npm run db:seed` | Recrée les données de démo |
-| `npm run db:reset` | Vide la base, puis relance les migrations, l'import Ciqual et le seed (développement uniquement) |
-| `npm run ciqual:build -- <dossier>` | Régénère les CSV de `data/` à partir des fichiers XML Ciqual |
-| `npm run typecheck` | Vérifie les types TypeScript |
+| `npm run db:up` / `npm run db:down` | Start or stop the database and its web interface. Data is retained in a Docker volume. |
+| `npm run db:migrate` | Apply migrations from `migrations/` that have not been applied yet. |
+| `npm run db:import-ciqual` | Import or update Ciqual foods and their nutritional values from `data/`. |
+| `npm run db:seed` | Recreate the demo account and its data. |
+| `npm run db:reset` | Clear the database, then run migrations, the Ciqual import, and the seed. For local development only. |
+| `npm run ciqual:build -- <directory>` | Regenerate the CSV files in `data/` from Ciqual XML files. |
+| `npm run typecheck` | Check TypeScript types. |
 
-### Consulter la base
+### Browsing the database
 
-`npm run db:up` démarre aussi [pgweb](https://github.com/sosedoff/pgweb), une interface web disponible sur http://localhost:8081. Elle permet de parcourir les tables et les vues, de modifier des lignes et de lancer des requêtes SQL, sans aucune connexion à configurer. Elle n'est accessible que depuis votre machine.
+`npm run db:up` also starts [pgweb](https://github.com/sosedoff/pgweb), a web interface available at [http://localhost:8081](http://localhost:8081). It lets you browse tables and views, edit rows, and run SQL queries without configuring a connection manually. Its port is bound to the local machine.
 
-pgweb ne dessine pas de diagramme, mais le schéma y est documenté : l'onglet **Structure** affiche la description de chaque colonne, et la vue `schema_relations` liste tous les liens entre les tables avec l'effet d'une suppression. Ces descriptions sont dans [migrations/005_document_schema.sql](migrations/005_document_schema.sql) : complétez-les quand vous ajoutez une table ou une colonne.
+pgweb does not draw a relationship diagram, but the schema is documented inside the database:
 
-Pour une console SQL dans le terminal : `docker compose exec db psql -U mealplanner -d mealplanner`.
+- The **Structure** tab displays descriptions for each column.
+- The `schema_relations` view lists relationships between tables and their deletion behavior.
 
-Le port 5433 évite un conflit avec un PostgreSQL déjà installé. Pour en changer, modifiez `DB_PORT` et `DATABASE_URL` dans `.env`.
+These descriptions are defined in [migrations/005_document_schema.sql](migrations/005_document_schema.sql). Keep schema descriptions up to date through new migrations whenever you add a table or column.
 
-Les secrets et les données réelles d'utilisateurs ne doivent jamais être versionnés : `.env` est ignoré par Git.
+To open a SQL console in the terminal:
 
-## Base de données
+```bash
+docker compose exec db psql -U mealplanner -d mealplanner
+```
 
-Le schéma est défini en SQL dans [migrations/](migrations/) :
+Port `5433` avoids conflicts with an existing PostgreSQL installation. To change it, update both `DB_PORT` and `DATABASE_URL` in `.env`.
 
-- `users` : comptes ; email unique sans tenir compte de la casse, mot de passe stocké haché uniquement.
-- `ingredients` : catalogue commun issu de la table Ciqual, nom unique, poids d'une pièce.
-- `nutrients`, `ingredient_nutrients` : les 74 valeurs nutritionnelles Ciqual (énergie, macronutriments, minéraux, vitamines…) de chaque ingrédient, pour 100 g ou 100 ml.
-- `recipes`, `recipe_ingredients`, `recipe_steps` : recettes d'un utilisateur, avec quantités, unités et étapes ordonnées.
-- `planned_meals` : une recette par jour et par moment (`breakfast`, `lunch`, `dinner`).
-- `shopping_lists`, `shopping_list_items` : listes générées pour une période, articles cochables.
+Never commit secrets or real user data. The `.env` file is ignored by Git.
 
-Règles appliquées par la base :
+### Running the API
 
-- Supprimer un compte supprime toutes ses données.
-- Une recette encore planifiée ne peut pas être supprimée.
-- Une recette ne peut être planifiée que par son propriétaire.
-- Un article de courses garde son libellé si l'ingrédient est retiré du catalogue.
+From `back/`, after installing dependencies and copying `.env.example`:
 
-### Valeurs nutritionnelles
+```bash
+npm run dev       # Start with automatic reload
+npm run typecheck # Check application, scripts, and test types
+npm test          # Run focused TypeScript tests
+npm run build    # Compile application code into dist/
+npm start        # Run dist/server.js
+```
 
-Chaque valeur est une ligne de `ingredient_nutrients` : ingrédient, code du nutriment (celui de Ciqual, listé dans `nutrients`), quantité pour 100 g ou 100 ml et nature de la valeur (`qualifier`) :
+The runtime loads `.env` once without overwriting environment variables already set by the caller. The application can be imported for tests without starting a server or connecting to PostgreSQL. Database migrations, imports, and seeds remain explicit commands; startup never runs them.
 
-- `exact` : valeur mesurée ;
-- `less_than` : inférieure à la valeur indiquée (Ciqual écrit « < 0,5 ») ;
-- `traces` : quantité infime, enregistrée à 0.
+| Variable | Purpose | Default |
+|---|---|---|
+| `NODE_ENV` | `development`, `test`, or `production` | `development` |
+| `HOST` | HTTP listening host | `127.0.0.1` |
+| `PORT` | HTTP port, from 1 to 65535 | `3000` |
+| `DATABASE_URL` | PostgreSQL URL including a host and database name | Required |
+| `FRONTEND_ORIGIN` | Frontend HTTP(S) origin, without a path | `http://localhost:5173` |
+| `SHUTDOWN_TIMEOUT_MS` | Maximum graceful shutdown time | `10000` |
+| `READINESS_TIMEOUT_MS` | Total database readiness deadline, in milliseconds | `2000` |
 
-Une valeur inconnue n'a pas de ligne. Quelques codes utiles : 328 énergie (kcal), 25000 protéines, 31000 glucides, 32000 sucres, 34100 fibres, 40000 lipides, 40302 acides gras saturés, 10004 sel. Pour lire les valeurs avec leurs noms, utilisez la vue `ingredient_nutrient_details`.
+`SIGINT` and `SIGTERM` stop accepting requests, let active requests finish, and close the shared PostgreSQL pool. A shutdown that exceeds the deadline terminates the process with an error.
 
-Les apports des recettes sont calculés par des vues et ne sont jamais stockés :
+Feature modules export an `ApiModule` with a `basePath` and an Express router. Pass modules to `createApp({ modules })` to register them without accessing another feature's internals.
+
+### Request validation, errors, and logging
+
+Middleware runs in this order: request ID and logging, CORS, JSON parsing (1 MiB maximum), feature routers, unknown-route handling, then the shared error handler. CORS advertises the configured `FRONTEND_ORIGIN`; it does not provide authentication or authorization.
+
+Each feature owns its Zod schemas. Use `validateRequest({ body, params, query })` on a route, then `validatedRequest(schemas, res)` in its controller to read parsed, typed input. Query coercion and defaults belong in those schemas. Parsed values are stored separately from raw Express input. Pass plain values to services, never Express request or response objects.
+
+Errors have this public shape:
+
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Request validation failed.",
+    "details": [{ "field": "body.name", "code": "too_small", "message": "Invalid value." }]
+  }
+}
+```
+
+Validation and malformed JSON return `400`, unknown routes return `404`, oversized JSON returns `413`, and unexpected errors return a generic `500`. Use `ApiError` for intentional public errors, including `401`, `403`, `404`, and `409`. Its messages and details must be safe for clients. `errorResponseSchema` provides the shared Zod contract and inferred TypeScript type.
+
+Every response carries a generated `X-Request-Id`. Logs contain only that ID, the request method, status, duration, and event name. They omit URLs, bodies, query strings, headers, exception messages, SQL, passwords, and tokens. Unexpected exceptions create a correlated `request_error` event; do not add raw error objects to it.
+
+### Health and readiness
+
+| Endpoint | Success | Failure | Database access |
+|---|---|---|---|
+| `GET /health` | `200`, `{ "data": { "status": "ok" } }` | Process is unreachable | None |
+| `GET /ready` | `200`, `{ "data": { "status": "ready" } }` | `503`, error code `DATABASE_UNAVAILABLE` | `SELECT 1` through the shared pool |
+
+Use `/health` to check process liveness and `/ready` to decide whether it can serve database-backed requests. Both endpoints are public. A failed database must not cause liveness to fail. Readiness does not verify migrations, catalog imports, or domain data.
+
+`READINESS_TIMEOUT_MS` bounds the complete readiness check, including waiting for a pooled connection. A timed-out active query destroys its connection; a connection acquired after the deadline is released without running SQL. The shared pool also limits connection establishment and pool acquisition to two seconds. Errors never expose SQL, credentials, connection strings, or stack traces.
+
+The health module's public `index.ts` exports its factory, response schemas and types, and `healthContract` endpoint metadata. Contracts can be imported without environment configuration or database access. OpenAPI generation and Swagger UI will be added in SCRUM-54; `/docs` and `/openapi.json` are not available yet.
+
+`npm test` runs isolated HTTP checks, including database failure and timeout cases. To also check against a real PostgreSQL instance, set `TEST_DATABASE_URL` to a dedicated database whose name ends in `_test`, then run `npm test`. This optional check only executes `SELECT 1`; it does not migrate, reset, seed, or import data. Never use a personal or production database for tests.
+
+```powershell
+$env:TEST_DATABASE_URL = 'postgres://test:test@localhost:55433/mealplanner_test'
+npm test
+Remove-Item Env:TEST_DATABASE_URL
+```
+
+## Database
+
+The schema is defined in SQL in [migrations/](migrations/):
+
+- `users`: accounts with case-insensitive unique email addresses and hashed passwords.
+- `ingredients`: a shared catalog imported from Ciqual, with unique names and optional weight per piece.
+- `nutrients`, `ingredient_nutrients`: each ingredient's 74 Ciqual nutritional values, including energy, macronutrients, minerals, and vitamins, per 100 g or 100 ml.
+- `recipes`, `recipe_ingredients`, `recipe_steps`: user recipes with quantities, units, and ordered preparation steps.
+- `planned_meals`: one recipe per user, day, and mealtime (`breakfast`, `lunch`, or `dinner`).
+- `shopping_lists`, `shopping_list_items`: shopping lists for a date range, with items that can be checked off.
+
+The database enforces these rules:
+
+- Deleting an account deletes its associated data.
+- A recipe that is still scheduled cannot be deleted.
+- A recipe can only be scheduled by its owner.
+- A shopping list item retains its label if its ingredient is removed from the catalog.
+
+### Nutritional values
+
+Each nutritional value is a row in `ingredient_nutrients`, containing the ingredient, nutrient code from `nutrients`, amount per 100 g or 100 ml, and a value qualifier:
+
+- `exact`: a measured value.
+- `less_than`: below the specified amount, such as a Ciqual value written as `< 0.5`.
+- `traces`: a trace amount, stored as zero.
+
+Unknown values have no corresponding row.
+
+Useful nutrient codes include:
+
+| Code | Nutrient |
+|---|---|
+| `328` | Energy in kcal |
+| `25000` | Protein |
+| `31000` | Carbohydrates |
+| `32000` | Sugars |
+| `34100` | Fiber |
+| `40000` | Fat |
+| `40302` | Saturated fatty acids |
+| `10004` | Salt |
+
+Use the `ingredient_nutrient_details` view to read values alongside ingredient and nutrient names.
+
+Recipe nutrition totals are calculated through views rather than stored:
 
 ```sql
--- Tous les nutriments d'une recette, au total et par portion
-SELECT nutrient_name, total, per_serving, unit, is_complete FROM recipe_nutrients WHERE recipe_id = $1;
+-- All nutrients for a recipe, in total and per serving
+SELECT nutrient_name, total, per_serving, unit, is_complete
+FROM recipe_nutrients
+WHERE recipe_id = $1;
 
--- Raccourci pour les calories
-SELECT total_kcal, kcal_per_serving, is_complete FROM recipe_calories WHERE recipe_id = $1;
+-- Calorie summary
+SELECT total_kcal, kcal_per_serving, is_complete
+FROM recipe_calories
+WHERE recipe_id = $1;
 ```
 
-Pour additionner, chaque quantité est convertie en grammes : 1 ml = 1 g, 1 c. à soupe = 15 g, 1 c. à café = 5 g, 1 pincée = 0,5 g. Pour `piece` et `bunch`, on utilise le poids `unit_weight_g` de l'ingrédient. Les traces et les valeurs `less_than` comptent pour 0. `is_complete` vaut `false` quand un ingrédient n'a pas de valeur pour ce nutriment ou pas de poids à la pièce : le total est alors sous-estimé, et l'interface doit l'indiquer.
+`$1` represents the recipe ID supplied as a query parameter.
 
-Pour un ingrédient ajouté à la main, ajoutez ses valeurs dans `ingredient_nutrients`, au minimum l'énergie (code 328).
+For calculations, quantities are converted to grams using the current assumptions:
 
-### Catalogue d'ingrédients (Ciqual)
+- 1 ml = 1 g.
+- 1 tablespoon = 15 g.
+- 1 teaspoon = 5 g.
+- 1 pinch = 0.5 g.
+- `piece` and `bunch` use the ingredient's `unit_weight_g`.
 
-Le catalogue contient les 3 484 aliments et leurs 74 valeurs nutritionnelles de la [table Ciqual 2025](https://entrepot.recherche.data.gouv.fr/dataset.xhtml?persistentId=doi:10.57745/RDMHWY) de l'Anses (version du 3 novembre 2025, publiée le 19 novembre 2025). Pour chaque aliment, on garde son code (`ciqual_code`), son nom et son sous-groupe comme catégorie. Les fichiers versionnés sont `data/ciqual.csv` (un aliment par ligne, une colonne par code de nutriment) et `data/ciqual-nutrients.csv` (nom et unité de chaque nutriment).
+Trace amounts and `less_than` values contribute zero. These conversions are approximations, so the results should be treated as estimates.
 
-Les recettes sont saisies à la main par l'équipe à partir de ces aliments. Ciqual ne donne pas de poids à la pièce : renseignez `unit_weight_g` quand une recette utilise `piece` ou `bunch` (1 oignon, 1 botte de coriandre). L'import ne touche pas à cette colonne ni aux ingrédients ajoutés à la main. En revanche, il remplace les valeurs nutritionnelles des aliments Ciqual : corrigez-les dans le CSV plutôt que dans la base.
+`is_complete` is `false` when an ingredient lacks a value for the nutrient or cannot be converted because its required unit weight is missing. The total then underestimates the recipe's nutritional content, and the interface must indicate that it is incomplete.
 
-Pour passer à une nouvelle version de Ciqual, téléchargez les fichiers XML (`alim_*.xml`, `alim_grp_*.xml`, `const_*.xml`, `compo_*.xml`), lancez `npm run ciqual:build -- <dossier>`, puis `npm run db:import-ciqual`. Pensez à mettre à jour la version citée ci-dessus.
+For manually added ingredients, populate `ingredient_nutrients` with nutritional values, including at least energy using code `328`.
 
-Source : Anses. 2025. Table de composition nutritionnelle des aliments Ciqual. Données sous [Licence Ouverte / Etalab 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/).
+### Ingredient catalog — Ciqual
 
-Pour faire évoluer le schéma, ajoutez un nouveau fichier numéroté (par exemple `002_add_favorites.sql`) au lieu de modifier une migration déjà appliquée. Chaque migration s'exécute dans une transaction.
+The catalog contains 3,484 foods and their 74 nutritional values from the Anses [Ciqual 2025 dataset](https://entrepot.recherche.data.gouv.fr/dataset.xhtml?persistentId=doi:10.57745/RDMHWY), version dated November 3, 2025, published November 19, 2025.
 
-Le hachage du mot de passe de démo (scrypt) est provisoire ; il devra suivre le format choisi pour l'authentification.
+For each food, the import retains its code (`ciqual_code`), name, and subgroup as its category. The versioned files are:
+
+- `data/ciqual.csv`: one food per row, with one column per nutrient code.
+- `data/ciqual-nutrients.csv`: the name and unit for each nutrient.
+
+The team creates recipes manually using these foods. Ciqual does not provide weight per piece: populate `unit_weight_g` when a recipe uses `piece` or `bunch`, such as one onion or one bunch of coriander.
+
+The import preserves `unit_weight_g` and manually added ingredients. It replaces the nutritional values of Ciqual foods, so make corrections in the CSV rather than directly in the database.
+
+To update to a new Ciqual version:
+
+1. Download the XML files: `alim_*.xml`, `alim_grp_*.xml`, `const_*.xml`, and `compo_*.xml`.
+2. Run `npm run ciqual:build -- <directory>`.
+3. Run `npm run db:import-ciqual`.
+4. Update the dataset version documented above.
+
+Source: Anses. 2025. *Ciqual food composition table*. Data licensed under the [Open Licence / Etalab 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/).
+
+### Schema changes
+
+Add a new numbered migration, such as `006_add_favorites.sql`, instead of modifying an already applied migration. Each migration runs in a transaction.
+
+The demo password's scrypt hashing format is temporary and must be aligned with the format chosen for authentication.
 
 ## Related documentation
 
+
 - [Architecture](../ARCHI.md): backend modules, shared HTTP behavior, data ownership, and OpenAPI generation.
+
 
 - [Project README](../README.md): product overview, requirements reference, and scope.
 - [Development guidelines](../GUIDELINES.md): conventions shared by the frontend and backend.

@@ -14,6 +14,7 @@ npm run dev
 
 Open the URL displayed by Vite. `npm ci` installs the versions recorded in `package-lock.json`. To add or update a dependency, use `npm install` and include changes to both `package.json` and `package-lock.json` in your contribution.
 
+
 The backend already provides PostgreSQL, migrations, the Ciqual import, demo data, and a connection pool. Its HTTP API is not implemented yet. Read [back/README.md](back/README.md) for database setup and [ARCHI.md](ARCHI.md) for the target frontend and backend structure. The current frontend does not require a `.env` file.
 
 ## Branches and commits
@@ -26,7 +27,7 @@ git pull --ff-only
 git switch -c feat/recipe-form
 ```
 
-Use `feat/`, `fix/`, `docs/`, `chore/`, or `refactor/` with a short English name in lowercase, separating words with hyphens. Branches created by Codex use the `codex/` prefix.
+Use `feat/`, `fix/`, `docs/`, `chore/`, or `refactor/` with a short English name in lowercase, separating words with hyphens.
 
 Write commit messages in English using `type(scope): description`, for example `feat(front): add the recipe form` or `docs: clarify setup instructions`. The scope is optional. Include the Jira reference in the commit or PR description when a ticket exists.
 
@@ -43,7 +44,7 @@ npm run build
 
 The build checks TypeScript and then builds the application with Vite. For interface changes, also run `npm run dev` and check the behavior in a browser, including at a mobile viewport width. Describe the steps and results in the PR.
 
-The repository does not yet include a lint command or automated tests. When adding them, document the commands here and include them in CI. For backend changes, provide installation and validation commands in its README.
+For backend changes, run `npm run typecheck`, `npm run build`, and `npm test` from `back/`. The repository does not yet include a lint command or frontend tests. Backend CI will be added separately; provide validation results in the pull request until then.
 
 ## Opening a pull request
 

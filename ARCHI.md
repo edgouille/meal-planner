@@ -122,6 +122,9 @@ back/
         validate.ts
         error-handler.ts
         not-found.ts
+        api-module.ts
+        errors.ts
+        validate-request.ts
         auth-context.ts
       logging/
   tests/
