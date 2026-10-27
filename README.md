@@ -35,6 +35,8 @@ MealPlanner constitue ainsi un projet d'application web fullstack visant à comb
 
 ## Installation
 
+Consultez [CONTRIBUTING.md](CONTRIBUTING.md) pour les prérequis, l'installation, les conventions Git, les vérifications et les règles GitHub à activer. Les consignes de développement sont dans [GUIDELINES.md](GUIDELINES.md).
+
 Pour installer et lancer le projet, suivez les instructions des README de chaque partie :
 
 * [Frontend](front/README.md) : installation et lancement de l'application React.
