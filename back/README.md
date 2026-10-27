@@ -94,7 +94,29 @@ The runtime loads `.env` once without overwriting environment variables already 
 
 `SIGINT` and `SIGTERM` stop accepting requests, let active requests finish, and close the shared PostgreSQL pool. A shutdown that exceeds the deadline terminates the process with an error.
 
-Feature modules export an `ApiModule` with a `basePath` and an Express router. Pass modules to `createApp({ modules })` to register them without accessing another feature's internals. Shared validation and error handling are the next foundation step.
+Feature modules export an `ApiModule` with a `basePath` and an Express router. Pass modules to `createApp({ modules })` to register them without accessing another feature's internals.
+
+### Request validation, errors, and logging
+
+Middleware runs in this order: request ID and logging, CORS, JSON parsing (1 MiB maximum), feature routers, unknown-route handling, then the shared error handler. CORS advertises the configured `FRONTEND_ORIGIN`; it does not provide authentication or authorization.
+
+Each feature owns its Zod schemas. Use `validateRequest({ body, params, query })` on a route, then `validatedRequest(schemas, res)` in its controller to read parsed, typed input. Query coercion and defaults belong in those schemas. Parsed values are stored separately from raw Express input. Pass plain values to services, never Express request or response objects.
+
+Errors have this public shape:
+
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Request validation failed.",
+    "details": [{ "field": "body.name", "code": "too_small", "message": "Invalid value." }]
+  }
+}
+```
+
+Validation and malformed JSON return `400`, unknown routes return `404`, oversized JSON returns `413`, and unexpected errors return a generic `500`. Use `ApiError` for intentional public errors, including `401`, `403`, `404`, and `409`. Its messages and details must be safe for clients. `errorResponseSchema` provides the shared Zod contract and inferred TypeScript type.
+
+Every response carries a generated `X-Request-Id`. Logs contain only that ID, the request method, status, duration, and event name. They omit URLs, bodies, query strings, headers, exception messages, SQL, passwords, and tokens. Unexpected exceptions create a correlated `request_error` event; do not add raw error objects to it.
 
 ## Database
 

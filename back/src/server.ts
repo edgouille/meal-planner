@@ -12,7 +12,7 @@ interface ServerOptions {
 }
 
 export async function startServer({ config, modules, closeDatabase }: ServerOptions) {
-  const app = createApp({ modules })
+  const app = createApp({ modules, frontendOrigin: config.frontendOrigin })
   let server: Server
   try {
     server = await new Promise<Server>((resolveListening, reject) => {
