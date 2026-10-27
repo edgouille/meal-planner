@@ -48,6 +48,8 @@ Le compte de démo est `demo@mealplanner.local` (mot de passe `mealplanner-demo`
 
 `npm run db:up` démarre aussi [pgweb](https://github.com/sosedoff/pgweb), une interface web disponible sur http://localhost:8081. Elle permet de parcourir les tables et les vues, de modifier des lignes et de lancer des requêtes SQL, sans aucune connexion à configurer. Elle n'est accessible que depuis votre machine.
 
+pgweb ne dessine pas de diagramme, mais le schéma y est documenté : l'onglet **Structure** affiche la description de chaque colonne, et la vue `schema_relations` liste tous les liens entre les tables avec l'effet d'une suppression. Ces descriptions sont dans [migrations/005_document_schema.sql](migrations/005_document_schema.sql) : complétez-les quand vous ajoutez une table ou une colonne.
+
 Pour une console SQL dans le terminal : `docker compose exec db psql -U mealplanner -d mealplanner`.
 
 Le port 5433 évite un conflit avec un PostgreSQL déjà installé. Pour en changer, modifiez `DB_PORT` et `DATABASE_URL` dans `.env`.
