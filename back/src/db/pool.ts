@@ -1,16 +1,9 @@
 import pg from 'pg'
+import { loadEnvironmentFile, requireDatabaseUrl } from '../config/env.ts'
 
-// Charge back/.env s'il existe ; en production, les variables viennent de l'environnement.
-try {
-  process.loadEnvFile()
-} catch {
-  // Pas de fichier .env : on garde les variables déjà définies.
-}
+// CLI database scripts and the HTTP server share the same configuration and pool.
+loadEnvironmentFile()
+export const pool = new pg.Pool({ connectionString: requireDatabaseUrl(process.env.DATABASE_URL) })
 
-const connectionString = process.env.DATABASE_URL
-
-if (!connectionString) {
-  throw new Error('DATABASE_URL est manquante. Copiez back/.env.example en back/.env.')
-}
-
-export const pool = new pg.Pool({ connectionString })
+// An idle connection failure must not become an unhandled EventEmitter error.
+pool.on('error', () => console.error('An idle PostgreSQL connection failed.'))
