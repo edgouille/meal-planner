@@ -1,6 +1,6 @@
 # Backend — MealPlanner
 
-The MealPlanner backend will expose the REST API consumed by the frontend and handle business rules and relational data persistence. This directory currently contains documentation only; the API has not been implemented yet.
+The MealPlanner backend will expose the REST API consumed by the frontend and handle business rules and relational data persistence. The database, migrations, Ciqual import, demo seed, and connection pool are available; the HTTP API has not been implemented yet.
 
 ## Planned responsibilities
 
@@ -113,6 +113,8 @@ Pour faire évoluer le schéma, ajoutez un nouveau fichier numéroté (par exemp
 Le hachage du mot de passe de démo (scrypt) est provisoire ; il devra suivre le format choisi pour l'authentification.
 
 ## Related documentation
+
+- [Architecture](../ARCHI.md): backend modules, shared HTTP behavior, data ownership, and OpenAPI generation.
 
 - [Project README](../README.md): product overview, requirements reference, and scope.
 - [Development guidelines](../GUIDELINES.md): conventions shared by the frontend and backend.

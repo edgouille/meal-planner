@@ -14,7 +14,7 @@ npm run dev
 
 Open the URL displayed by Vite. `npm ci` installs the versions recorded in `package-lock.json`. To add or update a dependency, use `npm install` and include changes to both `package.json` and `package-lock.json` in your contribution.
 
-The backend currently contains documentation only: no API, database, startup command, or migration is available yet. Read [back/README.md](back/README.md) before working on it. The current frontend does not require a `.env` file.
+The backend already provides PostgreSQL, migrations, the Ciqual import, demo data, and a connection pool. Its HTTP API is not implemented yet. Read [back/README.md](back/README.md) for database setup and [ARCHI.md](ARCHI.md) for the target frontend and backend structure. The current frontend does not require a `.env` file.
 
 ## Branches and commits
 
@@ -30,7 +30,7 @@ Use `feat/`, `fix/`, `docs/`, `chore/`, or `refactor/` with a short English name
 
 Write commit messages in English using `type(scope): description`, for example `feat(front): add the recipe form` or `docs: clarify setup instructions`. The scope is optional. Include the Jira reference in the commit or PR description when a ticket exists.
 
-Keep each contribution focused on one objective. Follow [GUIDELINES.md](GUIDELINES.md) for architecture, data handling, and code quality. Match the existing file's style and the `.editorconfig` settings. Write all repository documentation in English.
+Keep each contribution focused on one objective. Follow [ARCHI.md](ARCHI.md) for feature ownership, module boundaries, and shared contracts, and [GUIDELINES.md](GUIDELINES.md) for data handling and code quality. Match the existing file's style and the `.editorconfig` settings. Write all repository documentation in English.
 
 ## Checking a contribution
 
