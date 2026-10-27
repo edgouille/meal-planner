@@ -1,38 +1,40 @@
 # Frontend — MealPlanner
 
-Le frontend de MealPlanner fournit l'interface permettant aux utilisateurs de gérer leurs recettes, d'organiser leurs repas sur la semaine et de préparer leurs courses.
+The MealPlanner frontend provides the interface for users to manage recipes, organize weekly meals, and prepare shopping lists.
 
-## Fonctionnalités
+## Planned features
 
-- Inscription et connexion pour accéder à un espace personnel.
-- Consultation et gestion des recettes, de leurs ingrédients, quantités et étapes.
-- Planification des recettes par jour et moment de la journée.
-- Consultation d'une liste de courses générée à partir du planning et suivi des produits achetés.
+- Sign up and log in to access a personal account.
+- View and manage recipes, including ingredients, quantities, and preparation steps.
+- Schedule recipes by day and mealtime.
+- View a shopping list generated from the meal plan and track purchased products.
 
-## Rôle du frontend
+## Frontend responsibilities
 
-Le frontend présente les données et les actions disponibles à l'utilisateur, puis communique avec l'API REST du backend. Il ne doit pas accéder directement à la base de données. Les autorisations et la validation métier restent contrôlées par le backend.
+The frontend presents data and available actions to users and communicates with the backend REST API. It must not access the database directly. Permissions and business validation remain the backend's responsibility.
 
-## Technologies et lancement
+## Stack and setup
 
-Le frontend utilise React, TypeScript et Vite. Node.js et npm sont requis. Le backend associé utilise Node.js, TypeScript et Express.
+The frontend uses React, TypeScript, and Vite. Node.js 22 and npm are required. The planned backend uses Node.js, TypeScript, and Express.
+
+Run these commands from the `front/` directory:
 
 ```bash
 npm ci
 npm run dev
 ```
 
-Vite affiche l'adresse locale à ouvrir dans le navigateur. Pour créer et prévisualiser une version de production :
+Open the local URL displayed by Vite in your browser. To build and preview a production version:
 
 ```bash
 npm run build
 npm run preview
 ```
 
-L'interface actuelle est une première maquette interactive. Les connexions à l'API REST et les fonctionnalités de gestion persistante seront intégrées à mesure que le backend sera développé. Ne placez pas de secrets ou de données personnelles dans le dépôt.
+The current interface is a starter page. REST API integration and persistent data management will be added as the backend is developed. Never commit secrets or personal data.
 
-## Documentation associée
+## Related documentation
 
-- [README du projet](../README.md) : présentation et périmètre fonctionnel.
-- [Consignes de développement](../GUIDELINES.md) : conventions communes au frontend et au backend.
-- [Contribution](../CONTRIBUTING.md) : installation, règles Git et préparation d'une pull request.
+- [Project README](../README.md): product overview, requirements reference, and scope.
+- [Development guidelines](../GUIDELINES.md): conventions shared by the frontend and backend.
+- [Contributing guide](../CONTRIBUTING.md): setup, Git conventions, and preparing a pull request.

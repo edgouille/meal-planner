@@ -1,20 +1,20 @@
-## Besoin
+## Context
 
-Décrivez le problème et le ticket Jira éventuel.
+Describe the problem and link the Jira ticket, if applicable.
 
-## Changements
+## Changes
 
-Décrivez le comportement obtenu et les impacts éventuels sur l'API, les données ou la configuration.
+Describe the resulting behavior and any impact on the API, data, or configuration.
 
-## Vérifications
+## Validation
 
-- [ ] `cd front && npm ci && npm run build` réussit.
-- [ ] Le comportement modifié a été vérifié manuellement (étapes et résultat ci-dessous).
-- [ ] La documentation a été mise à jour si nécessaire.
-- [ ] Aucun secret ni donnée personnelle n'a été ajouté.
+- [ ] `cd front && npm ci && npm run build` passes.
+- [ ] The changed behavior has been checked manually (steps and results below).
+- [ ] Documentation has been updated where needed.
+- [ ] No secrets or personal data have been added.
 
-Précisez les vérifications non applicables ou non réalisées et leur raison.
+Explain any checks that do not apply or were not performed.
 
-## Captures et étapes de validation
+## Screenshots and validation steps
 
-Ajoutez les étapes pour reproduire le résultat et les captures utiles aux changements visuels.
+Provide steps to reproduce the result and useful screenshots for visual changes.
