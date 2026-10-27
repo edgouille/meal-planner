@@ -35,6 +35,8 @@ The current interface is a starter page. REST API integration and persistent dat
 
 ## Related documentation
 
+- [Architecture](../ARCHI.md): frontend feature folders, shared code, and API integration boundaries.
+
 - [Project README](../README.md): product overview, requirements reference, and scope.
 - [Development guidelines](../GUIDELINES.md): conventions shared by the frontend and backend.
 - [Contributing guide](../CONTRIBUTING.md): setup, Git conventions, and preparing a pull request.

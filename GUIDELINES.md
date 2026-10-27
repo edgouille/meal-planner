@@ -2,10 +2,12 @@
 
 These guidelines apply to both the MealPlanner frontend and backend. They complement the root README, which describes the product and its planned features.
 
+Follow [ARCHI.md](ARCHI.md) for feature folders, module boundaries, API contracts, and coordination of shared files.
+
 ## Organization
 
 - `front/` contains the interface for managing recipes, weekly meal plans, and shopping lists.
-- `back/` is reserved for the REST API, business rules, and access to persisted data. It currently contains documentation only.
+- `back/` contains PostgreSQL migrations, imports, demo data, and the connection pool. Its REST API and feature modules are the next implementation step.
 - Keep frontend and backend responsibilities separate. The frontend consumes the API instead of accessing the database directly.
 - Document technical decisions and prerequisites in the README for the relevant part of the project.
 

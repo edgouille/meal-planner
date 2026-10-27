@@ -37,13 +37,15 @@ Technical goals include:
 
 Development will be incremental, starting with an **MVP (Minimum Viable Product)** covering the application's core features. Additional features may follow as needs evolve.
 
-MealPlanner aims to combine an intuitive user experience with a clear, maintainable fullstack architecture. The current repository contains a starter frontend and backend documentation; the planned features and API are still to be implemented.
+MealPlanner aims to combine an intuitive user experience with a clear, maintainable fullstack architecture. The repository contains a starter frontend, an Express and TypeScript API runtime, and the PostgreSQL data layer, including migrations, the Ciqual import, and demo data. Business endpoints and user-facing features are still to be implemented.
 
 ## Setup
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) for prerequisites, setup instructions, Git conventions, checks, and GitHub rules to configure. Development guidelines are in [GUIDELINES.md](GUIDELINES.md).
 
+Read [ARCHI.md](ARCHI.md) before starting a feature. It defines the frontend and backend module structure, API contracts, and rules for coordinating shared changes.
+
 For details about each part of the project, see:
 
 - [Frontend](front/README.md): installing and running the React application.
-- [Backend](back/README.md): planned API responsibilities and setup documentation to complete when implementation begins.
+- [Backend](back/README.md): database setup, tooling, and planned API responsibilities.
