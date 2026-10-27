@@ -47,10 +47,10 @@ Les secrets et les données réelles d'utilisateurs ne doivent jamais être vers
 
 ## Base de données
 
-Le schéma est défini en SQL dans [migrations/001_initial_schema.sql](migrations/001_initial_schema.sql) :
+Le schéma est défini en SQL dans [migrations/](migrations/) :
 
 - `users` : comptes ; email unique sans tenir compte de la casse, mot de passe stocké haché uniquement.
-- `ingredients` : catalogue commun, nom unique.
+- `ingredients` : catalogue commun, nom unique, calories pour 100 g ou 100 ml et poids d'une pièce.
 - `recipes`, `recipe_ingredients`, `recipe_steps` : recettes d'un utilisateur, avec quantités, unités et étapes ordonnées.
 - `planned_meals` : une recette par jour et par moment (`breakfast`, `lunch`, `dinner`).
 - `shopping_lists`, `shopping_list_items` : listes générées pour une période, articles cochables.
@@ -61,6 +61,16 @@ Règles appliquées par la base :
 - Une recette encore planifiée ne peut pas être supprimée.
 - Une recette ne peut être planifiée que par son propriétaire.
 - Un article de courses garde son libellé si l'ingrédient est retiré du catalogue.
+
+### Calories
+
+Les calories sont saisies sur les ingrédients (`kcal_per_100`, pour 100 g ou 100 ml). Celles des recettes sont calculées par la vue `recipe_calories` et ne sont jamais stockées :
+
+```sql
+SELECT total_kcal, kcal_per_serving, is_complete FROM recipe_calories WHERE recipe_id = $1;
+```
+
+Pour additionner, chaque quantité est convertie en grammes : 1 ml = 1 g, 1 c. à soupe = 15 g, 1 c. à café = 5 g, 1 pincée = 0,5 g. Pour `piece` et `bunch`, on utilise le poids `unit_weight_g` de l'ingrédient. `is_complete` vaut `false` quand un ingrédient n'a pas de calories renseignées ou pas de poids à la pièce : le total est alors sous-estimé, et l'interface doit l'indiquer.
 
 Pour faire évoluer le schéma, ajoutez un nouveau fichier numéroté (par exemple `002_add_favorites.sql`) au lieu de modifier une migration déjà appliquée. Chaque migration s'exécute dans une transaction.
 

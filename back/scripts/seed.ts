@@ -9,22 +9,23 @@ const demoUser = {
   displayName: 'Compte démo',
 }
 
-const ingredients: Array<[name: string, category: string]> = [
-  ['Pois chiches', 'Épicerie'],
-  ['Lait de coco', 'Épicerie'],
-  ['Pâte de curry', 'Épicerie'],
-  ['Quinoa', 'Épicerie'],
-  ['Lentilles vertes', 'Épicerie'],
-  ['Flocons d’avoine', 'Épicerie'],
-  ['Huile d’olive', 'Épicerie'],
-  ['Potimarron', 'Fruits et légumes'],
-  ['Oignon', 'Fruits et légumes'],
-  ['Pomme', 'Fruits et légumes'],
-  ['Concombre', 'Fruits et légumes'],
-  ['Coriandre', 'Fruits et légumes'],
-  ['Feta', 'Crèmerie'],
-  ['Lait', 'Crèmerie'],
-  ['Bouillon de légumes', 'Épicerie'],
+// kcal pour 100 g ou 100 ml (valeurs moyennes indicatives), poids d'une pièce ou d'une botte en grammes.
+const ingredients: Array<[name: string, category: string, kcalPer100: number, unitWeightG: number | null]> = [
+  ['Pois chiches', 'Épicerie', 139, null],
+  ['Lait de coco', 'Épicerie', 197, null],
+  ['Pâte de curry', 'Épicerie', 110, null],
+  ['Quinoa', 'Épicerie', 368, null],
+  ['Lentilles vertes', 'Épicerie', 352, null],
+  ['Flocons d’avoine', 'Épicerie', 379, null],
+  ['Huile d’olive', 'Épicerie', 884, null],
+  ['Potimarron', 'Fruits et légumes', 34, 1200],
+  ['Oignon', 'Fruits et légumes', 40, 150],
+  ['Pomme', 'Fruits et légumes', 52, 180],
+  ['Concombre', 'Fruits et légumes', 15, 300],
+  ['Coriandre', 'Fruits et légumes', 23, 30],
+  ['Feta', 'Crèmerie', 264, null],
+  ['Lait', 'Crèmerie', 46, null],
+  ['Bouillon de légumes', 'Épicerie', 7, null],
 ]
 
 type Recipe = {
@@ -140,10 +141,12 @@ function toIsoDate(date: Date) {
 }
 
 async function seedIngredients(client: PoolClient) {
-  for (const [name, category] of ingredients) {
+  for (const [name, category, kcalPer100, unitWeightG] of ingredients) {
     await client.query(
-      'INSERT INTO ingredients (name, category) VALUES ($1, $2) ON CONFLICT ((lower(name))) DO NOTHING',
-      [name, category],
+      `INSERT INTO ingredients (name, category, kcal_per_100, unit_weight_g) VALUES ($1, $2, $3, $4)
+       ON CONFLICT ((lower(name))) DO UPDATE
+       SET category = EXCLUDED.category, kcal_per_100 = EXCLUDED.kcal_per_100, unit_weight_g = EXCLUDED.unit_weight_g`,
+      [name, category, kcalPer100, unitWeightG],
     )
   }
   const { rows } = await client.query<{ id: string; name: string }>('SELECT id, name FROM ingredients')
