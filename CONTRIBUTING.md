@@ -58,7 +58,21 @@ Before merging:
 - Documentation and configuration examples must be up to date.
 - A review by another contributor is expected when working as a team.
 
-Delete working branches after merging. Keep `dev` and `main`. After a release, continue contributions from `dev`. A merge commit that exists only on `main` is expected: do not merge `main` into `dev`, which must keep a linear history.
+Remote working branches are automatically deleted after their pull request is merged. Keep `dev` and `main` protected against deletion. After a release, continue contributions from `dev`. A merge commit that exists only on `main` is expected: do not merge `main` into `dev`, which must keep a linear history.
+
+## Automatic branch deletion after merging
+
+GitHub's **Automatically delete head branches** setting deletes a remote working branch after its pull request is merged, whether through rebase, squash, or a merge commit. No custom cleanup workflow is required.
+
+Enable it under **Settings → General → Pull Requests → Automatically delete head branches**.
+
+The **Restrict deletions** rules on `main` and `dev` keep these permanent branches from being deleted, including after a `dev` → `main` release PR. Other branch protection rules can also prevent automatic deletion.
+
+This setting does not delete local branches or remove branches solely because they are inactive. After a merge, switch back to `dev` and remove your local working branch when it is no longer needed. A deleted branch can be restored from the merged PR when GitHub offers the **Restore branch** action.
+
+For PRs from a fork, automatic deletion depends on the setting and write permissions in that fork.
+
+Reference: [Managing the automatic deletion of branches (GitHub documentation)](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-the-automatic-deletion-of-branches).
 
 ## Secrets and configuration
 
@@ -75,6 +89,7 @@ Repository files provide CI workflows and a PR template. They do not enable bran
 5. In the PR rule for `main`, allow only **Merge**. Leave **Require linear history** disabled. Require **Frontend build** and **Main source is dev** once their workflows have been published.
 6. Leave **Require branches to be up to date before merging** disabled on `main`: each release's merge commit stays on `main` and should not have to be integrated back into `dev`.
 7. For a team, require at least one approval and dismiss stale approvals after new commits. For a solo project, avoid requiring an approval that the author cannot give themselves.
+8. Under **Settings → General → Pull Requests**, enable **Automatically delete head branches** to remove working branches after their PR is merged. Keep deletion restrictions enabled on `main` and `dev`.
 
 Run the checks before selecting them as required checks. The `main-source.yml` workflow must be present on `main` to validate incoming PRs. It uses `pull_request_target` without checking out or executing proposed code: it only checks the source branch name and repository. Make this check mandatory in the `main` ruleset to block other sources.
 
