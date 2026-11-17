@@ -2,9 +2,11 @@ import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import type { Server } from 'node:http'
 import { createApp } from './app.ts'
-import { loadRuntimeConfig, type RuntimeConfig } from './config/env.ts'
+import { loadRuntimeConfig, requireAuthJwtSecret, type RuntimeConfig } from './config/env.ts'
 import type { ApiModule } from './shared/http/api-module.ts'
 import { createHealthModule } from './modules/health/index.ts'
+import { createAccessTokens, createAuthModule } from './modules/auth/index.ts'
+import { createUserRepository } from './modules/users/index.ts'
 
 interface ServerOptions {
   config: RuntimeConfig
@@ -71,10 +73,12 @@ export async function startServer({ config, modules, closeDatabase }: ServerOpti
 
 async function main() {
   const config = loadRuntimeConfig()
+  const tokens = createAccessTokens(requireAuthJwtSecret(process.env.AUTH_JWT_SECRET))
   // Validate runtime configuration before importing the database module.
   const { pool } = await import('./db/pool.ts')
   const health = createHealthModule({ pool, readinessTimeoutMs: config.readinessTimeoutMs })
-  const runtime = await startServer({ config, modules: [health], closeDatabase: () => pool.end() })
+  const auth = createAuthModule(createUserRepository(pool), tokens)
+  const runtime = await startServer({ config, modules: [health, auth], closeDatabase: () => pool.end() })
   const address = runtime.server.address()
   const port = typeof address === 'object' && address ? address.port : config.port
   console.info(`MealPlanner API listening on http://${config.host}:${port}`)

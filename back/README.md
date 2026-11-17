@@ -1,10 +1,9 @@
 # Backend — MealPlanner
 
-The MealPlanner backend will expose the REST API consumed by the frontend and handle business rules and relational data persistence. The database, migrations, Ciqual import, demo seed, and connection pool are available; the HTTP API has not been implemented yet.
+The MealPlanner backend provides a REST API consumed by the frontend. The API exposes health checks, account registration, and login. PostgreSQL migrations, the Ciqual import, and the demo seed are available as explicit setup commands.
 
 ## Planned API responsibilities
 
-- Handle user registration and authentication.
 - Provide operations to create, view, and manage recipes.
 - Save and retrieve weekly meal plans, associating a recipe with a day and a mealtime.
 - Generate shopping lists from the ingredients in planned meals and track purchased products.
@@ -140,6 +139,42 @@ npm test
 Remove-Item Env:TEST_DATABASE_URL
 ```
 
+## Authentication API
+
+From `back/`, copy `.env.example` to `.env` if needed. Generate a signing key with Node and save the output as `AUTH_JWT_SECRET` in `.env`:
+
+```sh
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+```
+
+Start PostgreSQL, apply the existing migrations with `npm run db:migrate`, and run `npm run dev`. The default API URL is `http://127.0.0.1:3000`. Set `FRONTEND_ORIGIN` to the exact frontend origin if it differs from `http://localhost:5173`.
+
+| Route | JSON body | Result |
+| --- | --- | --- |
+| `POST /api/auth/register` | `{"email":"camille@example.test","password":"local-password-123","displayName":"Camille Martin"}` | `201` with a session. A duplicate email returns `409 EMAIL_ALREADY_REGISTERED`. |
+| `POST /api/auth/login` | `{"email":"camille@example.test","password":"local-password-123"}` | `200` with a session. An unknown email or wrong password returns `401 INVALID_CREDENTIALS`. |
+
+Send `Content-Type: application/json`. Both routes return `400 VALIDATION_ERROR` for invalid fields. Registration requires an email, a password of 12–256 characters, and a display name of 1–100 characters after trimming. The API trims and lowercases the email. Passwords are used verbatim.
+
+Both success responses use this shape:
+
+```json
+{
+  "data": {
+    "accessToken": "<signed JWT>",
+    "tokenType": "Bearer",
+    "expiresIn": 3600,
+    "user": {
+      "id": "9a88e1e8-d81d-41eb-9f73-cc14e2128b50",
+      "email": "camille@example.test",
+      "displayName": "Camille Martin"
+    }
+  }
+}
+```
+
+The client sends `Authorization: Bearer <accessToken>` to protected routes. The token expires after one hour and the client then signs in again. The backend provides `requireAuthentication(tokens)` for future protected routes. When mounted before a handler, it verifies the token and sets `res.locals.auth.userId`. For a populated local database, the demo credentials above can also be used with the login endpoint.
+
 ## Database
 
 The schema is defined in SQL in [migrations/](migrations/):
@@ -239,7 +274,7 @@ Source: Anses. 2025. *Ciqual food composition table*. Data licensed under the [O
 
 Add a new numbered migration, such as `006_add_favorites.sql`, instead of modifying an already applied migration. Each migration runs in a transaction.
 
-The demo password's scrypt hashing format is temporary and must be aligned with the format chosen for authentication.
+The demo account uses the same scrypt password format as the authentication module and can sign in through the login endpoint.
 
 ## Related documentation
 

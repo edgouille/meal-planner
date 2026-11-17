@@ -67,3 +67,10 @@ export function loadRuntimeConfig(): RuntimeConfig {
   loadEnvironmentFile()
   return readEnvironment()
 }
+
+export function requireAuthJwtSecret(value: string | undefined): Uint8Array {
+  if (!value || !/^[a-f0-9]{64}$/i.test(value)) {
+    throw new Error('AUTH_JWT_SECRET must contain 32 bytes encoded as 64 hexadecimal characters.')
+  }
+  return Buffer.from(value, 'hex')
+}
