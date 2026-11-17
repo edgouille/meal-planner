@@ -22,6 +22,26 @@ export function createUserRepository(pool: Pick<Pool, 'query'>) {
       )
       return row ? { user: toUser(row), passwordHash: row.password_hash } : null
     },
+
+    async findById(id: string) {
+      const { rows: [row] } = await pool.query<UserRow>(
+        `SELECT id, email, display_name, created_at
+         FROM users WHERE id = $1`,
+        [id],
+      )
+      return row ? toUser(row) : null
+    },
+
+    /** Returns the row as written, or null when no account has this ID. */
+    async updateDisplayName(id: string, displayName: string) {
+      const { rows: [row] } = await pool.query<UserRow>(
+        `UPDATE users SET display_name = $2
+         WHERE id = $1
+         RETURNING id, email, display_name, created_at`,
+        [id, displayName],
+      )
+      return row ? toUser(row) : null
+    },
   }
 }
 

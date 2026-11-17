@@ -1,15 +1,15 @@
 import { Router } from 'express'
 import type { ApiModule } from '../../shared/http/api-module.ts'
 import { validatedRequest, validateRequest } from '../../shared/http/validate-request.ts'
-import type { UserRepository } from '../users/index.ts'
 import { authBasePath, authContract } from './auth.contract.ts'
-import { createAuthService } from './auth.service.ts'
+import { createAuthService, type AccountRepository } from './auth.service.ts'
 import type { AccessTokens } from './auth.tokens.ts'
 
 export { authBasePath, authContract } from './auth.contract.ts'
 export { createAccessTokens, requireAuthentication } from './auth.tokens.ts'
+export type { AccountRepository } from './auth.service.ts'
 
-export function createAuthModule(users: UserRepository, tokens: AccessTokens): ApiModule {
+export function createAuthModule(users: AccountRepository, tokens: AccessTokens): ApiModule {
   const router = Router()
   const service = createAuthService(users, tokens)
   const { register, login } = authContract

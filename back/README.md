@@ -175,6 +175,44 @@ Both success responses use this shape:
 
 The client sends `Authorization: Bearer <accessToken>` to protected routes. The token expires after one hour and the client then signs in again. The backend provides `requireAuthentication(tokens)` for future protected routes. When mounted before a handler, it verifies the token and sets `res.locals.auth.userId`. For a populated local database, the demo credentials above can also be used with the login endpoint.
 
+## Users API
+
+Both routes require `Authorization: Bearer <accessToken>` and act on the account identified by the token. A `userId` or `email` sent by the client is never used to choose the account.
+
+| Route | JSON body | Result |
+| --- | --- | --- |
+| `GET /api/users/me` | None | `200` with the current profile. |
+| `PATCH /api/users/me` | `{"displayName":"Camille Martin"}` | `200` with the updated profile. |
+
+Both success responses use this shape and are sent with `Cache-Control: no-store`:
+
+```json
+{
+  "data": {
+    "email": "camille@example.test",
+    "displayName": "Camille Martin"
+  }
+}
+```
+
+- `displayName` is required. It must be a string; it is trimmed, then must contain 1–100 characters. Any other field, such as `email` or `userId`, is rejected. An invalid body returns `400 VALIDATION_ERROR` (or `400 INVALID_JSON`) and leaves the stored profile unchanged.
+- A missing, malformed, expired, or wrongly signed token returns `401 UNAUTHENTICATED` on both routes, before the body is validated.
+- A valid token whose account no longer exists returns `404 USER_NOT_FOUND`.
+
+The `users` module receives the authentication middleware from `server.ts` (`createUsersModule(repository, requireAuthentication(tokens))`), so tests can mount it with their own signing key. `usersContract` describes both endpoints for the future OpenAPI document (SCRUM-54).
+
+To replay the checks with two local accounts, sign in as the demo account and register a second one through `POST /api/auth/register` or the `/inscription` page. `npm test` covers these routes with an in-memory repository. With `TEST_DATABASE_URL` set (see "Health and readiness"), it also checks that an update by one of two PostgreSQL accounts is stored and leaves the other unchanged; that check runs in a transaction that is rolled back. To create and migrate a local test database in the Compose container:
+
+```powershell
+docker compose exec db createdb -U mealplanner mealplanner_test
+$env:DATABASE_URL = 'postgres://mealplanner:mealplanner@localhost:5433/mealplanner_test'
+npm run db:migrate
+Remove-Item Env:DATABASE_URL
+$env:TEST_DATABASE_URL = 'postgres://mealplanner:mealplanner@localhost:5433/mealplanner_test'
+npm test
+Remove-Item Env:TEST_DATABASE_URL
+```
+
 ## Database
 
 The schema is defined in SQL in [migrations/](migrations/):

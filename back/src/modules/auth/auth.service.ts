@@ -4,7 +4,9 @@ import { hashPassword, verifyPassword } from './auth.password.ts'
 import type { LoginInput, RegisterInput } from './auth.schemas.ts'
 import { accessTokenLifetimeSeconds, type AccessTokens } from './auth.tokens.ts'
 
-export function createAuthService(users: UserRepository, tokens: AccessTokens) {
+export type AccountRepository = Pick<UserRepository, 'createAccount' | 'findAccountByEmail'>
+
+export function createAuthService(users: AccountRepository, tokens: AccessTokens) {
   async function session({ id, email, displayName }: User) {
     return {
       accessToken: await tokens.issue(id),

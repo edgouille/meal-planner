@@ -6,8 +6,8 @@ import { SignJWT } from 'jose'
 import request from 'supertest'
 import { createApp } from '../../src/app.ts'
 import { requireAuthJwtSecret } from '../../src/config/env.ts'
-import { createAccessTokens, createAuthModule, requireAuthentication } from '../../src/modules/auth/index.ts'
-import type { User, UserRepository } from '../../src/modules/users/index.ts'
+import { createAccessTokens, createAuthModule, requireAuthentication, type AccountRepository } from '../../src/modules/auth/index.ts'
+import type { User } from '../../src/modules/users/index.ts'
 
 const userId = '9a88e1e8-d81d-41eb-9f73-cc14e2128b50'
 const secret = Buffer.alloc(32, 1)
@@ -15,7 +15,7 @@ const password = 'a local test password'
 
 function fixture() {
   const accounts = new Map<string, { user: User; passwordHash: string }>()
-  const users: UserRepository = {
+  const users: AccountRepository = {
     async createAccount(email, displayName, passwordHash) {
       if (accounts.has(email)) return null
       const user = { id: userId, email, displayName, createdAt: new Date() }
