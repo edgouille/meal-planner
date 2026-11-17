@@ -5,8 +5,8 @@ import { createApp } from './app.ts'
 import { loadRuntimeConfig, requireAuthJwtSecret, type RuntimeConfig } from './config/env.ts'
 import type { ApiModule } from './shared/http/api-module.ts'
 import { createHealthModule } from './modules/health/index.ts'
-import { createAccessTokens, createAuthModule } from './modules/auth/index.ts'
-import { createUserRepository } from './modules/users/index.ts'
+import { createAccessTokens, createAuthModule, requireAuthentication } from './modules/auth/index.ts'
+import { createUserRepository, createUsersModule } from './modules/users/index.ts'
 
 interface ServerOptions {
   config: RuntimeConfig
@@ -77,8 +77,10 @@ async function main() {
   // Validate runtime configuration before importing the database module.
   const { pool } = await import('./db/pool.ts')
   const health = createHealthModule({ pool, readinessTimeoutMs: config.readinessTimeoutMs })
-  const auth = createAuthModule(createUserRepository(pool), tokens)
-  const runtime = await startServer({ config, modules: [health, auth], closeDatabase: () => pool.end() })
+  const users = createUserRepository(pool)
+  const auth = createAuthModule(users, tokens)
+  const profile = createUsersModule(users, requireAuthentication(tokens))
+  const runtime = await startServer({ config, modules: [health, auth, profile], closeDatabase: () => pool.end() })
   const address = runtime.server.address()
   const port = typeof address === 'object' && address ? address.port : config.port
   console.info(`MealPlanner API listening on http://${config.host}:${port}`)

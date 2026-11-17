@@ -57,6 +57,7 @@
 }
 
 .login,
+.settings,
 .signup {
   height: 40px;
   padding: 0 16px;
@@ -70,7 +71,8 @@
   transition: background 0.15s;
 }
 
-.login:hover {
+.login:hover,
+.settings:hover {
   background: var(--color-soft);
 }
 
@@ -131,5 +133,25 @@ button.login {
 
   button.login {
     display: inline-flex;
+  }
+}
+
+@media (max-width: 400px) {
+  .login,
+  .settings,
+  .signup {
+    padding: 0 10px;
+  }
+}
+
+.brand svg {
+  flex-shrink: 0;
+}
+
+/* Signed in, the header holds two actions: keep the logo and drop the wordmark on small screens.
+   The link keeps its accessible name through aria-label. */
+@media (max-width: 480px) {
+  .signedIn .brandName {
+    display: none;
   }
 }
