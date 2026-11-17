@@ -1,5 +1,5 @@
 import styles from './SiteHeader.module.css'
-import { BrandMark } from './BrandMark.tsx'
+import { BrandMark } from '../../../shared/ui/BrandMark.tsx'
 
 const links = [
   { href: '#fonctionnalites', label: 'Fonctionnalités' },
@@ -7,7 +7,13 @@ const links = [
   { href: '#nutrition', label: 'Nutrition' },
 ]
 
-export function SiteHeader() {
+export interface SiteHeaderProps {
+  /** Name of the signed-in user, if any. */
+  userName?: string
+  onSignOut?: () => void
+}
+
+export function SiteHeader({ userName, onSignOut }: SiteHeaderProps) {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
@@ -27,12 +33,25 @@ export function SiteHeader() {
         </nav>
 
         <div className={styles.actions}>
-          <a className={styles.login} href="/connexion">
-            Se connecter
-          </a>
-          <a className={styles.signup} href="/inscription">
-            Créer un compte
-          </a>
+          {userName ? (
+            <>
+              <span className={styles.greeting}>
+                Bonjour, <strong>{userName}</strong>
+              </span>
+              <button className={styles.login} type="button" onClick={onSignOut}>
+                Se déconnecter
+              </button>
+            </>
+          ) : (
+            <>
+              <a className={styles.login} href="/connexion">
+                Se connecter
+              </a>
+              <a className={styles.signup} href="/inscription">
+                Créer un compte
+              </a>
+            </>
+          )}
         </div>
       </div>
     </header>

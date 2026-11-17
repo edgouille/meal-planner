@@ -1,5 +1,5 @@
 import styles from './SiteFooter.module.css'
-import { BrandMark } from './BrandMark.tsx'
+import { BrandMark } from '../../../shared/ui/BrandMark.tsx'
 
 export function SiteFooter() {
   return (
