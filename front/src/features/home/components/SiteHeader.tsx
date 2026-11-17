@@ -15,11 +15,11 @@ export interface SiteHeaderProps {
 
 export function SiteHeader({ userName, onSignOut }: SiteHeaderProps) {
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} ${userName ? styles.signedIn : ''}`}>
       <div className={styles.inner}>
         <a className={styles.brand} href="/" aria-label="MealPlanner, accueil">
           <BrandMark />
-          <span>
+          <span className={styles.brandName}>
             Meal<span className={styles.brandLight}>Planner</span>
           </span>
         </a>
@@ -38,6 +38,9 @@ export function SiteHeader({ userName, onSignOut }: SiteHeaderProps) {
               <span className={styles.greeting}>
                 Bonjour, <strong>{userName}</strong>
               </span>
+              <a className={styles.settings} href="/parametres">
+                Paramètres
+              </a>
               <button className={styles.login} type="button" onClick={onSignOut}>
                 Se déconnecter
               </button>

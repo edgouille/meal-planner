@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react'
-import type { AuthSession } from './auth.types.ts'
+import type { AuthSession, AuthUser } from './auth.types.ts'
 
 // The access token lives for one hour and cannot be refreshed: the session is dropped when it
 // expires and the user signs in again. It is kept in localStorage so it survives a reload and is
@@ -50,6 +50,16 @@ export function saveSession(session: AuthSession) {
     // Storage can be unavailable (private browsing): keep the session for this tab only.
   }
   setCurrent(session)
+}
+
+/** Current session outside React (for example, to attach the access token to API requests). */
+export function getSession() {
+  return current
+}
+
+/** Keeps the stored user in sync after a profile change, without touching the token. */
+export function updateSessionUser(changes: Partial<Omit<AuthUser, 'id'>>) {
+  if (current) saveSession({ ...current, user: { ...current.user, ...changes } })
 }
 
 export function clearSession() {

@@ -39,6 +39,12 @@ The sign-in and registration pages call `POST /api/auth/login` and `POST /api/au
 
 After signing in, the session (access token, expiry, and user) is kept in `localStorage` and shared between tabs. The token lasts one hour and cannot be refreshed: the session is cleared when it expires and the user signs in again. Signing out only clears the local session.
 
+Features call protected routes with `apiRequest(path, { authenticated: true })`. The shared client adds the bearer token. When no valid token is available or the API answers `401`, it clears the session. `src/app/App.tsx` connects the client to the auth session with `configureAuthentication`, so `shared/` never imports a feature. Protected pages are listed in `protectedPaths` in `App.tsx`. Opening one while signed out redirects to `/connexion`.
+
+## Account settings
+
+The `/parametres` page (`src/features/users/`) is protected and linked as **Paramètres** in the signed-in header. It loads `GET /api/users/me`, shows the email read-only, and saves the **Nom affiché** with `PATCH /api/users/me`. The client applies the same rule as the API (1–100 characters after trimming) for immediate feedback. A failed load can be retried, and a failed save keeps the typed name. After a successful save, the name in the stored session is updated so the header greeting stays current.
+
 Navigation between pages uses a small History API helper (`src/shared/lib/navigation.ts`) until the team selects a routing library. Links such as `<a href="/connexion">` navigate without reloading the page.
 
 ## Related documentation
