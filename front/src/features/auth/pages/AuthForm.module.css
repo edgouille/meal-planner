@@ -1,0 +1,36 @@
+.form {
+  display: grid;
+  gap: 18px;
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius-button);
+  background: var(--color-error-background);
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+.submit {
+  height: 52px;
+  margin-top: 6px;
+  border: 0;
+  border-radius: var(--radius-button);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: var(--shadow-button);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.submit:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.submit:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}

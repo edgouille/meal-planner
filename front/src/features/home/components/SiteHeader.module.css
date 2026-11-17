@@ -103,3 +103,33 @@
     display: none;
   }
 }
+
+.greeting {
+  max-width: 220px;
+  overflow: hidden;
+  color: var(--color-muted);
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.greeting strong {
+  color: var(--color-ink);
+}
+
+button.login {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .greeting {
+    display: none;
+  }
+
+  button.login {
+    display: inline-flex;
+  }
+}

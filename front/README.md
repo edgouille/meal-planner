@@ -31,7 +31,15 @@ npm run build
 npm run preview
 ```
 
-The current interface is the public home page (`src/features/home/`), styled with the "Potager pétillant" design tokens in `src/styles.css`. REST API integration and persistent data management will be added as the backend is developed. Never commit secrets or personal data.
+The interface contains the public home page (`src/features/home/`) and the sign-in (`/connexion`) and registration (`/inscription`) pages (`src/features/auth/`), styled with the "Potager pétillant" design tokens in `src/styles.css`. Never commit secrets or personal data.
+
+## Connecting to the API
+
+The sign-in and registration pages call `POST /api/auth/login` and `POST /api/auth/register`. Start the backend first (see [back/README.md](../back/README.md#authentication-api)). The frontend calls `http://127.0.0.1:3000` by default; to use another API origin, copy `.env.example` to `.env.local` and set `VITE_API_URL`. The backend only accepts requests from its `FRONTEND_ORIGIN`, `http://localhost:5173` by default.
+
+After signing in, the session (access token, expiry, and user) is kept in `localStorage` and shared between tabs. The token lasts one hour and cannot be refreshed: the session is cleared when it expires and the user signs in again. Signing out only clears the local session.
+
+Navigation between pages uses a small History API helper (`src/shared/lib/navigation.ts`) until the team selects a routing library. Links such as `<a href="/connexion">` navigate without reloading the page.
 
 ## Related documentation
 
