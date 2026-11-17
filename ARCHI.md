@@ -4,7 +4,7 @@ This is the shared architecture for frontend and backend contributions. Follow i
 
 ## Current implementation and target
 
-The repository currently contains a React starter, TypeScript configuration, PostgreSQL migrations, the Ciqual import, demo data, and a database connection pool. Express routes, authentication, API documentation, and the feature folders below are not implemented yet.
+The repository contains a public React home page, PostgreSQL migrations, the Ciqual import, demo data, and an Express API with health, registration, and login routes. The remaining feature modules and generated API documentation are described below.
 
 The trees in this document describe the target structure. Create files when needed by a feature; do not generate empty layers or move existing working code just to match a diagram.
 
@@ -16,7 +16,7 @@ The trees in this document describe the target structure. Create files when need
 | Request contracts | Zod schemas with inferred TypeScript types |
 | API documentation | OpenAPI generated with `@asteasolutions/zod-to-openapi`, displayed with `swagger-ui-express` |
 | Backend tests | Node.js test runner through `tsx`, with Supertest for HTTP tests |
-| Authentication | JWT, as specified in [SCRUM-39](https://edgarandre.atlassian.net/browse/SCRUM-39); token transport, expiry, and refresh behavior must be documented before implementation |
+| Authentication | JWT access tokens carried in the Authorization header, with a one-hour lifetime and sign-in required on expiry. See the [authentication API](back/README.md#authentication-api) and [SCRUM-39](https://edgarandre.atlassian.net/browse/SCRUM-39). |
 | Language | English for code identifiers, documentation, branch names, and commit messages |
 
 Keep the current ES module setup. Backend imports must remain compatible with `NodeNext` and the TypeScript build. Do not add an ORM or replace the existing migrations as part of API setup.
