@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { clearSession, getSession, LoginPage, RegisterPage, updateSessionUser, useSession } from '../features/auth/index.ts'
 import { HomePage } from '../features/home/index.ts'
 import { SettingsPage } from '../features/users/index.ts'
-import { RecipesPage } from '../features/recipes/index.ts'
+import { RecipesPage, listRecipes } from '../features/recipes/index.ts'
 import { configureAuthentication } from '../shared/api/client.ts'
 import { navigate, useInternalLinks, usePathname } from '../shared/lib/navigation.ts'
 
@@ -41,7 +41,7 @@ function App() {
   if (redirect) return null
   if (pathname === '/connexion') return <LoginPage />
   if (pathname === '/inscription') return <RegisterPage />
-  if (pathname === '/planning') return <MealPlansPage onSignOut={clearSession} />
+  if (pathname === '/planning') return <MealPlansPage onSignOut={clearSession} searchRecipes={listRecipes} />
   if (pathname === '/recettes') return <RecipesPage onSignOut={clearSession} />
   if (pathname === '/parametres') {
     return <SettingsPage onProfileSaved={({ displayName }) => updateSessionUser({ displayName })} onSignOut={clearSession} />

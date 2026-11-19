@@ -11,20 +11,37 @@
 .weekNav { display: flex; flex-wrap: wrap; gap: 8px; }
 .button { padding: 10px 14px; border: 1px solid #cbd5c0; border-radius: 9px; background: var(--color-surface); color: #294e36; font: inherit; font-size: 14px; cursor: pointer; }
 .button:hover { background: #edf3e7; }
-.button:disabled { opacity: .5; cursor: wait; }
+.button:disabled, .add:disabled, .remove:disabled { opacity: .5; cursor: wait; }
 .week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1px solid var(--color-line); border-radius: 16px; overflow: hidden; background: var(--color-surface); }
 .day { border-right: 1px solid var(--color-line); min-width: 0; }
 .day:last-child { border: 0; }
 .day h3 { min-height: 80px; display: flex; align-items: center; padding: 16px 12px; margin: 0; font-size: 14px; text-transform: capitalize; background: var(--color-soft); }
 .slot { padding: 14px 12px; min-height: 175px; border-top: 1px solid #e5e9de; }
 .slot h4 { font-size: 11px; letter-spacing: .04em; color: #63735d; margin: 0 0 14px; text-transform: uppercase; }
+.add { width: 100%; min-height: 104px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border: 1px dashed #c6d1b8; border-radius: 10px; color: #5d7450; background: var(--color-background); font: inherit; font-size: 13px; cursor: pointer; padding: 10px; }
+.add:hover { background: #edf3dd; }
+.add span { font-size: 24px; }
 .meal { background: #edf3df; border-left: 3px solid #7d9952; border-radius: 8px; padding: 12px; }
 .recipeTitle { font-weight: 650; line-height: 1.4; overflow-wrap: anywhere; margin: 0 0 8px; font-size: 14px; }
 .portions { font-size: 12px; color: #5f7356; margin: 0 0 12px; }
-.emptySlot { font-size: 13px; color: #63735d; margin: 0; }
+.remove { font: inherit; font-size: 12px; text-decoration: underline; color: #73553c; border: 0; background: none; padding: 0; cursor: pointer; }
 .empty { padding: 16px 20px; margin-bottom: 22px; border-radius: 10px; background: #f0f3e4; }
 .error { color: #913a2b; background: #fff0e8; padding: 14px; border-radius: 10px; }
-.main button:focus-visible, .header a:focus-visible, .header button:focus-visible { outline: 3px solid #7c9844; outline-offset: 3px; }
+.success { color: #2c603b; padding: 14px; background: #eaf4e6; border-radius: 10px; }
+.dialog { color: var(--color-ink); border: 1px solid var(--color-line); border-radius: 18px; background: var(--color-surface); padding: 28px; width: min(600px, calc(100% - 32px)); max-height: 85vh; overflow-y: auto; }
+.dialog::backdrop { background: #142b22a6; }
+.dialogHeading { display: flex; align-items: flex-start; gap: 18px; justify-content: space-between; }
+.dialogHeading h2 { margin: 0 0 24px; font-size: 26px; }
+.search { margin-bottom: 20px; }
+.search label { display: block; font-size: 14px; margin-bottom: 8px; }
+.searchRow { display: flex; gap: 8px; }
+.search input { min-width: 0; flex: 1; border: 1px solid #c5ceb9; background: white; color: var(--color-ink); border-radius: 8px; padding: 10px; font: inherit; }
+.recipeList { list-style: none; padding: 0; margin: 0; }
+.recipeList li { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 0; border-top: 1px solid #e2e7d7; }
+.recipeList strong { display: block; overflow-wrap: anywhere; }
+.recipeList span { display: block; color: #617354; font-size: 13px; margin-top: 6px; }
+.pager { display: flex; gap: 12px; align-items: center; justify-content: space-between; font-size: 13px; margin-top: 18px; }
+.main button:focus-visible, .dialog button:focus-visible, .dialog input:focus-visible, .header a:focus-visible, .header button:focus-visible { outline: 3px solid #7c9844; outline-offset: 3px; }
 @media (max-width: 1100px) { .week { grid-template-columns: repeat(2, minmax(0, 1fr)); } .day { border-bottom: 1px solid var(--color-line); } .day h3 { min-height: auto; } .slot { min-height: 140px; } }
 @media (max-width: 600px) {
   .headerInner { padding: 18px; align-items: flex-start; flex-direction: column; }
@@ -35,4 +52,6 @@
   .weekHeading h2 { line-height: 1.6; }
   .weekNav { gap: 6px; }
   .weekNav .button { padding: 9px; font-size: 12px; }
+  .dialog { padding: 20px; }
+  .dialogHeading h2 { font-size: 22px; }
 }
