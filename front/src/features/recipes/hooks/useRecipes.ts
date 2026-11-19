@@ -7,13 +7,13 @@ type LoadState = { status: 'loading' } | { status: 'error'; message: string } | 
 
 export function useRecipes() {
   const [load, setLoad] = useState<LoadState>({ status: 'loading' })
-  const [page, setPage] = useState(1)
+  const [criteria, setCriteria] = useState({ q: '', page: 1 })
   const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
     const controller = new AbortController()
     setLoad({ status: 'loading' })
-    listRecipes(page, controller.signal).then(
+    listRecipes(criteria, controller.signal).then(
       response => {
         if (!controller.signal.aborted) setLoad({ status: 'ready', response })
       },
@@ -25,7 +25,13 @@ export function useRecipes() {
       },
     )
     return () => controller.abort()
-  }, [page, attempt])
+  }, [criteria, attempt])
 
-  return { load, page, changePage: setPage, retry: () => setAttempt(value => value + 1) }
+  return {
+    load, page: criteria.page, query: criteria.q,
+    changePage: (page: number) => setCriteria(previous => ({ ...previous, page })),
+    // Apply the filter and reset pagination in one update; superseded requests are aborted above.
+    search: (q: string) => setCriteria({ q: q.trim(), page: 1 }),
+    retry: () => setAttempt(value => value + 1),
+  }
 }

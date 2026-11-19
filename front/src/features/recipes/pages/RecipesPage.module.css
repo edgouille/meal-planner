@@ -82,6 +82,49 @@
   font-size: 14px;
 }
 
+.search {
+  margin-bottom: 28px;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.searchField {
+  flex: 1 1 260px;
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.searchField label { font-size: 14px; font-weight: 600; }
+
+.searchField input {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-small);
+  background: var(--color-background);
+  color: var(--color-ink);
+  font: inherit;
+}
+
+.searchField input::placeholder { color: var(--color-muted); }
+
+.search .primary {
+  min-height: 46px;
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.search .primary:hover { background: var(--color-primary-hover); }
+
 .grid {
   padding: 0;
   display: grid;

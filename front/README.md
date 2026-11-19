@@ -53,6 +53,8 @@ Signed-in users can open `/recettes` from the home page or account settings. The
 
 Loading, empty-account, error/retry and pagination states are included. Signed-out visitors follow the shared sign-in flow, and a protected API `401` clears the existing session. The page reuses the "Potager pétillant" tokens and feature-local CSS Modules, with a one-column layout on mobile. Recipe creation remains a separate story (SCRUM-10).
 
+Search by title with the labeled form, using Enter or **Rechercher**. The server performs a case-insensitive literal substring search across all owned recipes, not just the current page. Submitting or clearing a search resets pagination to page 1. The result count reflects the active filter, and an unmatched query has its own empty state. **Effacer la recherche** restores the full list. Whitespace is trimmed and input is limited to 150 characters, matching the API. Superseded requests are aborted and their responses ignored; a retry preserves the active search and page.
+
 ## Related documentation
 
 - [Architecture](../ARCHI.md): frontend feature folders, shared code, and API integration boundaries.

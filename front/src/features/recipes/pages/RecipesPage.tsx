@@ -1,15 +1,27 @@
-import { useEffect } from 'react'
+import { useEffect, useId, useState, type FormEvent } from 'react'
 import { BrandMark } from '../../../shared/ui/BrandMark.tsx'
 import { RecipeCard } from '../components/RecipeCard.tsx'
 import { useRecipes } from '../hooks/useRecipes.ts'
 import styles from './RecipesPage.module.css'
 
 export function RecipesPage({ onSignOut }: { onSignOut: () => void }) {
-  const { load, page, changePage, retry } = useRecipes()
+  const { load, page, query, changePage, search, retry } = useRecipes()
+  const [draft, setDraft] = useState('')
+  const searchId = useId()
   const response = load.status === 'ready' ? load.response : undefined
   const pageCount = response ? Math.max(1, Math.ceil(response.pagination.total / response.pagination.pageSize)) : 1
 
   useEffect(() => { document.title = 'Mes recettes · MealPlanner' }, [])
+
+  function submitSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    search(draft)
+  }
+
+  function clearSearch() {
+    setDraft('')
+    search('')
+  }
 
   return (
     <div>
@@ -32,6 +44,16 @@ export function RecipesPage({ onSignOut }: { onSignOut: () => void }) {
         <h1 className={styles.title}>Mes recettes</h1>
         <p className={styles.subtitle}>Retrouvez vos recettes et choisissez votre prochaine idée à cuisiner.</p>
 
+        <form className={styles.search} role="search" aria-label="Recherche de recettes" onSubmit={submitSearch}>
+          <div className={styles.searchField}>
+            <label htmlFor={searchId}>Rechercher une recette</label>
+            <input id={searchId} name="q" type="search" placeholder="Ex. : soupe du jardin" maxLength={150}
+              value={draft} onChange={event => setDraft(event.target.value)} />
+          </div>
+          <button className={`${styles.button} ${styles.primary}`} type="submit">Rechercher</button>
+          {(draft || query) && <button className={styles.button} type="button" onClick={clearSearch}>Effacer la recherche</button>}
+        </form>
+
         <section aria-label="Vos recettes" aria-busy={load.status === 'loading'}>
           {load.status === 'loading' && <p className={styles.message} role="status">Chargement de vos recettes…</p>}
           {load.status === 'error' && (
@@ -43,7 +65,7 @@ export function RecipesPage({ onSignOut }: { onSignOut: () => void }) {
           {response && (
             <>
               <p className={styles.count} role="status">
-                {response.pagination.total} {response.pagination.total === 1 ? 'recette' : 'recettes'}
+                {response.pagination.total} {response.pagination.total === 1 ? 'recette' : 'recettes'}{query && <> pour « {query} »</>}
               </p>
               {response.data.length > 0 ? (
                 <ul className={styles.grid} aria-label="Liste de recettes">
@@ -52,8 +74,9 @@ export function RecipesPage({ onSignOut }: { onSignOut: () => void }) {
               ) : (
                 <div className={styles.empty}>
                   <span className={styles.emptyMark} aria-hidden="true">✦</span>
-                  <h2>{response.pagination.total === 0 ? 'Votre carnet attend ses premières recettes' : 'Cette page ne contient aucune recette'}</h2>
-                  <p>{response.pagination.total === 0 ? 'Les recettes enregistrées sur votre compte apparaîtront ici.' : 'Revenez à la première page pour retrouver vos recettes.'}</p>
+                  <h2>{query ? 'Aucune recette trouvée' : response.pagination.total === 0 ? 'Votre carnet attend ses premières recettes' : 'Cette page ne contient aucune recette'}</h2>
+                  <p>{query ? 'Essayez un autre nom ou effacez votre recherche pour retrouver toutes vos recettes.' : response.pagination.total === 0 ? 'Les recettes enregistrées sur votre compte apparaîtront ici.' : 'Revenez à la première page pour retrouver vos recettes.'}</p>
+                  {query && <button className={styles.button} type="button" onClick={clearSearch}>Voir toutes mes recettes</button>}
                   {page > 1 && <button className={styles.button} type="button" onClick={() => changePage(1)}>Revenir à la première page</button>}
                 </div>
               )}
