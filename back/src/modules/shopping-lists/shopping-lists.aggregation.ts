@@ -75,3 +75,33 @@ export function aggregateIngredients(lines: PlannedIngredient[]): AggregatedItem
     .filter(item => item.quantity > 0)
     .sort((first, second) => first.label.localeCompare(second.label, 'fr') || first.unit.localeCompare(second.unit))
 }
+
+/** An item of the list being replaced. */
+export interface PreviousItem {
+  ingredientId: string | null
+  label: string
+  quantity: number | null
+  unit: MeasureUnit | null
+  isPurchased: boolean
+  isManual: boolean
+}
+
+export type GeneratedItem = PreviousItem
+
+// When a period is generated again, an item stays purchased if the user already bought at least
+// the new quantity. Items added by hand are kept as they are.
+export function mergeWithPrevious(items: AggregatedItem[], previous: PreviousItem[]): GeneratedItem[] {
+  const bought = new Map<string, number>()
+  for (const item of previous) {
+    if (!item.isPurchased || item.isManual || !item.ingredientId || !item.unit || item.quantity === null) continue
+    const key = itemKey(item.ingredientId, item.unit)
+    bought.set(key, (bought.get(key) ?? 0) + toBaseQuantity(item.quantity, item.unit))
+  }
+  return [
+    ...items.map(item => {
+      const purchased = bought.get(itemKey(item.ingredientId, item.unit))
+      return { ...item, isPurchased: purchased !== undefined && toBaseQuantity(item.quantity, item.unit) <= purchased + 1e-9, isManual: false }
+    }),
+    ...previous.filter(item => item.isManual),
+  ]
+}

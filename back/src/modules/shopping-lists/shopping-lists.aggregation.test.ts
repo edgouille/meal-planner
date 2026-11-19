@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { aggregateIngredients, itemKey, toBaseQuantity, type PlannedIngredient } from './shopping-lists.aggregation.ts'
+import { aggregateIngredients, itemKey, mergeWithPrevious, toBaseQuantity, type PlannedIngredient } from './shopping-lists.aggregation.ts'
 
 const line = (overrides: Partial<PlannedIngredient>): PlannedIngredient => ({
   ingredientId: 'onion', name: 'Oignon', quantity: 1, unit: 'piece', recipeServings: 4, plannedServings: 4, ...overrides,
@@ -53,4 +53,20 @@ test('compares items of the same ingredient in base units', () => {
   assert.equal(toBaseQuantity(1.5, 'kg'), 1500)
   assert.equal(toBaseQuantity(75, 'cl'), 750)
   assert.equal(toBaseQuantity(2, 'piece'), 2)
+})
+
+test('a regenerated item stays purchased only if its quantity did not increase, and manual items are kept', () => {
+  const merged = mergeWithPrevious([
+    { ingredientId: 'flour', label: 'Farine', quantity: 1, unit: 'kg' },
+    { ingredientId: 'milk', label: 'Lait', quantity: 1, unit: 'l' },
+    { ingredientId: 'egg', label: 'Œuf', quantity: 6, unit: 'piece' },
+  ], [
+    { ingredientId: 'flour', label: 'Farine', quantity: 1000, unit: 'g', isPurchased: true, isManual: false },
+    { ingredientId: 'milk', label: 'Lait', quantity: 50, unit: 'cl', isPurchased: true, isManual: false },
+    { ingredientId: 'egg', label: 'Œuf', quantity: 6, unit: 'piece', isPurchased: false, isManual: false },
+    { ingredientId: null, label: 'Éponges', quantity: null, unit: null, isPurchased: true, isManual: true },
+  ])
+  assert.deepEqual(merged.map(({ label, isPurchased, isManual }) => [label, isPurchased, isManual]), [
+    ['Farine', true, false], ['Lait', false, false], ['Œuf', false, false], ['Éponges', true, true],
+  ])
 })
