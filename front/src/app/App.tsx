@@ -4,6 +4,7 @@ import { clearSession, getSession, LoginPage, RegisterPage, updateSessionUser, u
 import { HomePage } from '../features/home/index.ts'
 import { SettingsPage } from '../features/users/index.ts'
 import { RecipesPage, listRecipes } from '../features/recipes/index.ts'
+import { ShoppingListPage } from '../features/shopping-lists/index.ts'
 import { configureAuthentication } from '../shared/api/client.ts'
 import { navigate, useInternalLinks, usePathname } from '../shared/lib/navigation.ts'
 import { SiteHeader } from '../shared/ui/SiteHeader.tsx'
@@ -19,7 +20,7 @@ configureAuthentication({
 })
 
 const authPaths = ['/connexion', '/inscription']
-const protectedPaths = ['/parametres', '/recettes', '/planning']
+const protectedPaths = ['/parametres', '/recettes', '/planning', '/courses']
 const knownPaths = ['/', ...authPaths, ...protectedPaths]
 
 function redirectFor(pathname: string, signedIn: boolean) {
@@ -45,6 +46,7 @@ function App() {
   let page = <HomePage signedIn={Boolean(session)} />
   if (pathname === '/planning') page = <MealPlansPage searchRecipes={listRecipes} />
   if (pathname === '/recettes') page = <RecipesPage />
+  if (pathname === '/courses') page = <ShoppingListPage />
   if (pathname === '/parametres') {
     page = <SettingsPage onProfileSaved={({ displayName }) => updateSessionUser({ displayName })} />
   }

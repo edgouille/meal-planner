@@ -68,3 +68,7 @@ Search by title with the labeled form, using Enter or **Rechercher**. The server
 ## Weekly planning
 
 Signed-in users can open `/planning` from **Mon planning** in the account navigation. The page displays a Monday-to-Sunday week with three meal slots per day. Users can search their recipes, assign one to a free slot, remove an assignment, and navigate between weeks. All changes use the authenticated backend API documented in [the backend README](../back/README.md#meal-planning--epic-02).
+
+## Shopping list
+
+Signed-in users can open `/courses` from **Mes courses** in the account navigation. The page shows the shopping list of a Monday-to-Sunday week, with the same week navigation as the planning. **Générer la liste de courses** builds the list from the week's planned meals. **Mettre à jour depuis le planning** rebuilds it after the planning changes. Items are grouped by aisle (Ciqual subgroup), with quantities in French units (`2 pièces`, `3 c. à soupe`). The week helpers used by both pages live in `src/shared/lib/week.ts`. The API and aggregation rules are documented in [the backend README](../back/README.md#shopping-lists--epic-03).
