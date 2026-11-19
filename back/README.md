@@ -2,6 +2,31 @@
 
 The MealPlanner backend provides a REST API consumed by the frontend. The API exposes health checks, account registration, and login. PostgreSQL migrations, the Ciqual import, and the demo seed are available as explicit setup commands.
 
+## Recipe list API
+
+`GET /api/recipes` lists the signed-in user's recipes (SCRUM-17, part of SCRUM-9 / epic SCRUM-5). Send the existing JWT as `Authorization: Bearer <accessToken>`. The owner is always taken from that token; callers cannot select another user.
+
+| Query parameter | Behavior | Default |
+|---|---|---|
+| `q` | Case-insensitive literal substring of the title, trimmed, at most 150 characters. An empty value lists all owned recipes. `%` and `_` are ordinary characters. | Empty |
+| `page` | Integer from 1 to 1000000 | `1` |
+| `pageSize` | Integer from 1 to 100 | `20` |
+
+```json
+{
+  "data": [{ "id": "3f0c5a52-4f6d-4c55-9a43-6d2b1f5e8a01", "title": "Soupe du jardin", "description": null, "prepMinutes": 20, "servings": 2 }],
+  "pagination": { "page": 1, "pageSize": 20, "total": 1 }
+}
+```
+
+Results are ordered by case-insensitive title, then the original title and ID for stable pagination. `total` counts all matching owned recipes before pagination; an out-of-range page returns an empty `data` array with the same total. Empty accounts and searches with no matches return `200` with an empty array. Description and preparation time can be `null`.
+
+Missing, invalid, or expired tokens return `401`. Invalid or unknown query fields (including `userId`) return `400`. SQL uses parameters and filters both result rows and counts by owner. Responses use `Cache-Control: no-store`; unexpected failures use the shared sanitized error envelope.
+
+The module exports its Zod schemas, inferred types, and `recipesContract` metadata through its public `index.ts`. OpenAPI generation remains tracked in SCRUM-54. No database migration is needed. The existing demo seed contains recipes; a newly registered account starts empty. Recipe creation is a separate story (SCRUM-10).
+
+The HTTP tests cover authentication, validation, ownership, filtering, pagination and errors. With `TEST_DATABASE_URL` set to a migrated dedicated database ending in `_test`, an additional test checks the actual repository with two accounts and rolls back its fixtures.
+
 ## Planned API responsibilities
 
 - Provide operations to create, view, and manage recipes.
