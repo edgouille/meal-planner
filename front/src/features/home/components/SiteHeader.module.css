@@ -148,6 +148,19 @@ button.login {
   flex-shrink: 0;
 }
 
+/* Account actions wrap rather than overflow when all signed-in links are visible. */
+.signedIn .inner {
+  height: auto;
+  min-height: 68px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.signedIn .actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 /* Signed in, the header holds two actions: keep the logo and drop the wordmark on small screens.
    The link keeps its accessible name through aria-label. */
 @media (max-width: 480px) {

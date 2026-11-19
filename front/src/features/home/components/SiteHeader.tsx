@@ -38,6 +38,9 @@ export function SiteHeader({ userName, onSignOut }: SiteHeaderProps) {
               <span className={styles.greeting}>
                 Bonjour, <strong>{userName}</strong>
               </span>
+              <a className={styles.settings} href="/recettes">
+                Mes recettes
+              </a>
               <a className={styles.settings} href="/parametres">
                 Paramètres
               </a>
