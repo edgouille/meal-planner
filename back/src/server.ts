@@ -1,3 +1,4 @@
+import { createMealPlansModule, createMealPlanRepository } from './modules/meal-plans/index.ts'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import type { Server } from 'node:http'
@@ -82,7 +83,8 @@ async function main() {
   const auth = createAuthModule(users, tokens)
   const profile = createUsersModule(users, requireAuthentication(tokens))
   const recipes = createRecipesModule(createRecipeRepository(pool), requireAuthentication(tokens))
-  const runtime = await startServer({ config, modules: [health, auth, profile, recipes], closeDatabase: () => pool.end() })
+  const mealPlans = createMealPlansModule(createMealPlanRepository(pool), requireAuthentication(tokens))
+  const runtime = await startServer({ config, modules: [health, auth, profile, recipes, mealPlans], closeDatabase: () => pool.end() })
   const address = runtime.server.address()
   const port = typeof address === 'object' && address ? address.port : config.port
   console.info(`MealPlanner API listening on http://${config.host}:${port}`)

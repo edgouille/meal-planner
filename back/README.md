@@ -348,3 +348,25 @@ The demo account uses the same scrypt password format as the authentication modu
 - [Project README](../README.md): product overview, requirements reference, and scope.
 - [Development guidelines](../GUIDELINES.md): conventions shared by the frontend and backend.
 - [Contributing guide](../CONTRIBUTING.md): setup, Git conventions, and preparing a pull request.
+
+## Meal planning — EPIC-02
+
+The protected `/planning` page shows Monday through Sunday with breakfast, lunch and dinner slots. Use the week navigation to move backward, forward or return to the current week. Choose an owned recipe in an empty slot or remove an existing meal. The recipe selector supports title search and pagination.
+
+| Endpoint | Input | Result |
+| --- | --- | --- |
+| `GET /api/meal-plans` | Required `startDate` and `endDate` query fields, inclusive `YYYY-MM-DD` dates | `200 { "data": [...] }`, ordered by date and meal moment. |
+| `POST /api/meal-plans` | `{ "recipeId": "<uuid>", "date": "2026-11-19", "moment": "lunch" }` | `201 { "data": { "id": "...", "date": "...", "moment": "lunch", "servings": 4, "recipe": { "id": "...", "title": "..." } } }` |
+| `DELETE /api/meal-plans/:id` | Planned meal UUID | `204` with an empty body. |
+
+All routes require the bearer access token. The API derives ownership from verified authentication. The date range may span up to 31 calendar days and must be ordered. Supported dates run from `0100-01-01` through `9998-12-31`. Moments are `breakfast`, `lunch` and `dinner`. Calendar dates are returned without timezone conversion.
+
+Creation takes servings from the owned recipe and stores them with the planned meal. A slot already used by the same account returns `409 SLOT_OCCUPIED`, including concurrent writes. An unavailable or foreign recipe returns `404 RECIPE_NOT_FOUND`. Deleting a missing or foreign meal returns `404 MEAL_NOT_FOUND`. Unknown input fields, invalid UUIDs, invalid dates and invalid moments return `400 VALIDATION_ERROR`. The existing schema already contains the required ownership and slot constraints.
+
+### Checking the planning flow
+
+1. Start the project with the root `npm run dev`. Load demo data with `npm run db:demo` on a local database if recipes are needed. Sign in with the demo credentials documented above.
+2. Open **Mon planning**, add a recipe to a free slot and reload. Check that the recipe remains on the same day and mealtime.
+3. Navigate to the previous and next weeks, then return using **Cette semaine**. Remove the planned meal and reload to check its removal.
+4. Repeat with a second local account to verify that the first account's recipes and planned meals stay private. Check empty weeks, recipe search, keyboard navigation and a narrow mobile viewport.
+5. Run `npm run typecheck`, `npm run build` and `npm test` in `back/`, and `npm run build` in `front/`. The optional planning PostgreSQL HTTP test uses `TEST_DATABASE_URL` pointing to a migrated database whose name ends in `_test`. It checks concurrent writes through the connection pool and deletes its temporary accounts and their data afterward.

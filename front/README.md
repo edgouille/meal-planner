@@ -64,3 +64,7 @@ Search by title with the labeled form, using Enter or **Rechercher**. The server
 - [Project README](../README.md): product overview, requirements reference, and scope.
 - [Development guidelines](../GUIDELINES.md): conventions shared by the frontend and backend.
 - [Contributing guide](../CONTRIBUTING.md): setup, Git conventions, and preparing a pull request.
+
+## Weekly planning
+
+Signed-in users can open `/planning` from **Mon planning** in the account navigation. The page displays a Monday-to-Sunday week with three meal slots per day. Users can search their recipes, assign one to a free slot, remove an assignment, and navigate between weeks. All changes use the authenticated backend API documented in [the backend README](../back/README.md#meal-planning--epic-02).

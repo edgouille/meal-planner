@@ -30,6 +30,7 @@ export function SettingsPage({ onProfileSaved, onSignOut }: SettingsPageProps) {
             </span>
           </a>
           <nav className={styles.actions} aria-label="Compte">
+            <a className={styles.headerLink} href="/planning">Mon planning</a>
             <a className={styles.headerLink} href="/recettes">
               Mes recettes
             </a>
