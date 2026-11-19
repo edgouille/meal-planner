@@ -49,6 +49,8 @@ Navigation between pages uses a small History API helper (`src/shared/lib/naviga
 
 ## Recipe browsing
 
+On the home page, signed-in users get account navigation (recipes/settings) instead of presentation links. The header stays on one row on desktop, with two dedicated rows on small screens and an accessible icon-only sign-out button. The hero links to their recipes; account-creation prompts are shown only to signed-out visitors.
+
 Signed-in users can open `/recettes` from the home page or account settings. The page calls authenticated `GET /api/recipes` through the shared API client, shows recipe titles and descriptions in cards, and paginates in groups of 20. Preparation time and servings are read-only metadata; missing optional values have explicit fallbacks.
 
 Loading, empty-account, error/retry and pagination states are included. Signed-out visitors follow the shared sign-in flow, and a protected API `401` clears the existing session. The page reuses the "Potager pétillant" tokens and feature-local CSS Modules, with a one-column layout on mobile. Recipe creation remains a separate story (SCRUM-10).

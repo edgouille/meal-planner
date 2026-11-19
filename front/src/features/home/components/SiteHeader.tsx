@@ -7,6 +7,11 @@ const links = [
   { href: '#nutrition', label: 'Nutrition' },
 ]
 
+const accountLinks = [
+  { href: '/recettes', label: 'Mes recettes' },
+  { href: '/parametres', label: 'Paramètres' },
+]
+
 export interface SiteHeaderProps {
   /** Name of the signed-in user, if any. */
   userName?: string
@@ -24,8 +29,8 @@ export function SiteHeader({ userName, onSignOut }: SiteHeaderProps) {
           </span>
         </a>
 
-        <nav className={styles.nav} aria-label="Sections de la page">
-          {links.map((link) => (
+        <nav className={styles.nav} aria-label={userName ? 'Navigation principale' : 'Sections de la page'}>
+          {(userName ? accountLinks : links).map((link) => (
             <a key={link.href} href={link.href}>
               {link.label}
             </a>
@@ -35,17 +40,15 @@ export function SiteHeader({ userName, onSignOut }: SiteHeaderProps) {
         <div className={styles.actions}>
           {userName ? (
             <>
-              <span className={styles.greeting}>
-                Bonjour, <strong>{userName}</strong>
+              <span className={styles.greeting} title={userName}>
+                <span className={styles.avatar} aria-hidden="true">{userName.trim().charAt(0).toLocaleUpperCase('fr')}</span>
+                <span className={styles.accountName}>{userName}</span>
               </span>
-              <a className={styles.settings} href="/recettes">
-                Mes recettes
-              </a>
-              <a className={styles.settings} href="/parametres">
-                Paramètres
-              </a>
-              <button className={styles.login} type="button" onClick={onSignOut}>
-                Se déconnecter
+              <button className={styles.logout} type="button" onClick={onSignOut} aria-label="Se déconnecter">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M10 5H5v14h5M14 8l4 4-4 4M9 12h9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span className={styles.logoutLabel}>Se déconnecter</span>
               </button>
             </>
           ) : (

@@ -2,16 +2,16 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(246, 249, 241, 0.88);
+  background: rgba(246, 249, 241, 0.95);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--color-line);
 }
 
 .inner {
   max-width: 1160px;
-  height: 68px;
+  min-height: 76px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 12px 24px;
   display: flex;
   align-items: center;
   gap: 32px;
@@ -19,6 +19,7 @@
 
 .brand {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 10px;
   font-family: var(--font-display);
@@ -26,145 +27,139 @@
   font-weight: 800;
   letter-spacing: -0.03em;
   text-decoration: none;
+  white-space: nowrap;
 }
 
-.brandLight {
-  color: var(--color-primary);
-}
+.brand svg { flex-shrink: 0; }
+.brandLight { color: var(--color-primary); }
 
 .nav {
   display: flex;
-  gap: 26px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 24px;
   margin-right: auto;
 }
 
 .nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--color-muted);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   text-decoration: none;
+  white-space: nowrap;
   transition: color 0.15s;
 }
 
-.nav a:hover {
-  color: var(--color-ink);
-}
+.nav a:hover { color: var(--color-primary); }
+.signedIn .nav a { color: var(--color-ink); font-weight: 600; }
+.signedIn .nav a:hover { color: var(--color-primary); }
 
 .actions {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
+  margin-left: auto;
 }
 
 .login,
-.settings,
-.signup {
-  height: 40px;
-  padding: 0 16px;
+.signup,
+.logout {
+  min-height: 44px;
+  padding: 10px 14px;
   display: inline-flex;
+  justify-content: center;
   align-items: center;
+  gap: 8px;
+  border: 0;
   border-radius: var(--radius-button);
-  font-size: 15px;
+  background: transparent;
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 14px;
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
+  cursor: pointer;
   transition: background 0.15s;
 }
 
 .login:hover,
-.settings:hover {
-  background: var(--color-soft);
-}
-
-.signup {
-  background: var(--color-primary);
-  color: #fff;
-}
-
-.signup:hover {
-  background: var(--color-primary-hover);
-}
-
-@media (max-width: 860px) {
-  .nav {
-    display: none;
-  }
-
-  .actions {
-    margin-left: auto;
-  }
-}
-
-@media (max-width: 480px) {
-  .inner {
-    padding: 0 16px;
-    gap: 12px;
-  }
-
-  .login {
-    display: none;
-  }
-}
+.logout:hover { background: var(--color-soft); }
+.logout { border: 1px solid var(--color-line); }
+.logout svg { flex-shrink: 0; }
+.signup { background: var(--color-primary); color: #fff; }
+.signup:hover { background: var(--color-primary-hover); }
 
 .greeting {
-  max-width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  color: var(--color-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-soft);
+  color: var(--color-primary);
+}
+
+.accountName {
+  max-width: 160px;
   overflow: hidden;
-  color: var(--color-muted);
-  font-size: 15px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.greeting strong {
-  color: var(--color-ink);
+@media (max-width: 1000px) {
+  .nav { display: none; }
+  .signedIn .nav { display: flex; }
+  .greeting { display: none; }
 }
 
-button.login {
-  border: 0;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
+@media (max-width: 640px) {
+  .inner { padding: 12px 16px; gap: 12px; }
+  .signedIn .inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 12px;
+  }
+  .signedIn .actions { grid-column: 2; grid-row: 1; }
+  .signedIn .nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin: 0;
+    padding: 4px;
+    gap: 4px;
+    border-radius: var(--radius-button);
+    background: var(--color-soft);
+  }
+  .signedIn .nav a {
+    flex: 1;
+    justify-content: center;
+    border-radius: 7px;
+  }
+  .signedIn .nav a:hover { background: var(--color-surface); }
 }
 
 @media (max-width: 480px) {
-  .greeting {
-    display: none;
-  }
-
-  button.login {
-    display: inline-flex;
-  }
-}
-
-@media (max-width: 400px) {
-  .login,
-  .settings,
-  .signup {
-    padding: 0 10px;
-  }
-}
-
-.brand svg {
-  flex-shrink: 0;
-}
-
-/* Account actions wrap rather than overflow when all signed-in links are visible. */
-.signedIn .inner {
-  height: auto;
-  min-height: 68px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.signedIn .actions {
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-/* Signed in, the header holds two actions: keep the logo and drop the wordmark on small screens.
-   The link keeps its accessible name through aria-label. */
-@media (max-width: 480px) {
-  .signedIn .brandName {
-    display: none;
-  }
+  .inner { gap: 8px; }
+  .login { display: none; }
+  .brand { font-size: 18px; }
+  .logout { width: 44px; padding: 10px; }
+  /* The icon-only button retains its full accessible name. */
+  .logoutLabel { display: none; }
+  .actions { gap: 8px; }
+  .signup { padding: 10px 8px; }
 }

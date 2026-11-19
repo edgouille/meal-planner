@@ -47,7 +47,7 @@
 
 body {
   margin: 0;
-  min-width: 320px;
+  min-width: 0;
   line-height: 1.6;
 }
 
