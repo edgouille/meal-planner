@@ -11,6 +11,7 @@ const accountLinks = [
   { href: '/', label: 'Accueil' },
   { href: '/recettes', label: 'Mes recettes' },
   { href: '/planning', label: 'Mon planning' },
+  { href: '/courses', label: 'Mes courses' },
 ]
 
 export interface SiteHeaderProps {

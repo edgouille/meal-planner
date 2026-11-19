@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { listMeals, removeMeal } from '../api/meal-plans.api.ts'
 import { RecipePicker, type RecipePickerResult, type SearchRecipes } from '../components/RecipePicker.tsx'
-import { currentMonday, dateKey, shiftDays } from '../meal-plans.dates.ts'
+import { currentMonday, dateKey, shiftDays } from '../../../shared/lib/week.ts'
 import type { MealMoment, PlannedMeal } from '../meal-plans.types.ts'
 import styles from './MealPlansPage.module.css'
 

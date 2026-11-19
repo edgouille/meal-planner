@@ -247,7 +247,7 @@ The schema is defined in SQL in [migrations/](migrations/):
 - `nutrients`, `ingredient_nutrients`: each ingredient's 74 Ciqual nutritional values, including energy, macronutrients, minerals, and vitamins, per 100 g or 100 ml.
 - `recipes`, `recipe_ingredients`, `recipe_steps`: user recipes with quantities, units, and ordered preparation steps.
 - `planned_meals`: one recipe per user, day, and mealtime (`breakfast`, `lunch`, or `dinner`).
-- `shopping_lists`, `shopping_list_items`: shopping lists for a date range, with items that can be checked off.
+- `shopping_lists`, `shopping_list_items`: shopping lists for a date range. Each item stores its purchased state in `is_purchased`.
 
 The database enforces these rules:
 
@@ -370,3 +370,43 @@ Creation takes servings from the owned recipe and stores them with the planned m
 3. Navigate to the previous and next weeks, then return using **Cette semaine**. Remove the planned meal and reload to check its removal.
 4. Repeat with a second local account to verify that the first account's recipes and planned meals stay private. Check empty weeks, recipe search, keyboard navigation and a narrow mobile viewport.
 5. Run `npm run typecheck`, `npm run build` and `npm test` in `back/`, and `npm run build` in `front/`. The optional planning PostgreSQL HTTP test uses `TEST_DATABASE_URL` pointing to a migrated database whose name ends in `_test`. It checks concurrent writes through the connection pool and deletes its temporary accounts and their data afterward.
+
+## Shopping lists — EPIC-03
+
+A shopping list covers a period of at most 31 days, usually one week. It is generated from the meals planned in that period.
+
+| Endpoint | Input | Result |
+| --- | --- | --- |
+| `GET /api/shopping-lists` | Required `startDate` and `endDate` query fields, inclusive `YYYY-MM-DD` dates | `200 { "data": { ...list } }` for the list last generated for exactly this period, or `200 { "data": null }`. |
+| `POST /api/shopping-lists/generate` | `{ "startDate": "2026-11-16", "endDate": "2026-11-22" }` | `201 { "data": { ...list } }`. The list is empty when no meal is planned. |
+| `PATCH /api/shopping-lists/:listId/items/:itemId` | `{ "isPurchased": true }` | `200 { "data": { ...item } }`. An item that is missing or belongs to another account's list returns `404 ITEM_NOT_FOUND`. |
+
+A list has this shape:
+
+```json
+{
+  "id": "…", "startDate": "2026-11-16", "endDate": "2026-11-22", "generatedAt": "2026-11-19T09:12:00.000Z",
+  "items": [
+    { "id": "…", "ingredientId": "…", "label": "Pois chiche, appertisé, égoutté", "category": "légumineuses",
+      "quantity": 600, "unit": "g", "isPurchased": false, "isManual": false }
+  ]
+}
+```
+
+All routes require the bearer access token and only read or write the authenticated account's data.
+
+Generation rules (`shopping-lists.aggregation.ts`):
+
+- Each ingredient line is scaled to the planned servings: `quantity × planned servings ÷ recipe servings`.
+- Lines of the same ingredient are added when their units are compatible: `g` and `kg` together, and `ml`, `cl` and `l` together. The result uses a readable unit, for example 1.3 kg or 75 cl.
+- `piece`, `bunch`, `tbsp`, `tsp` and `pinch` are only added to the same unit, so an ingredient can appear on two lines. Pieces and bunches are rounded up to whole units.
+- Items are sorted by Ciqual subgroup (`category`), so products of the same aisle stay together, then by name.
+- Generating a period again replaces its previous list in a single transaction. An item stays purchased when its quantity has not increased, and items added by hand (`isManual`) are kept.
+
+### Checking the shopping flow
+
+1. Start the project with the root `npm run dev` and sign in with the demo account. Plan a few recipes for the current week in **Mon planning**.
+2. Open **Mes courses** and select **Générer la liste de courses**. Check that quantities add up across meals (for example, a recipe planned twice doubles its ingredients) and that items are grouped by aisle.
+3. Check two items, reload, and check that they are still purchased. Add a meal to the planning, select **Mettre à jour depuis le planning**, and check that items whose quantity did not increase stay purchased.
+4. Navigate to a week without a list to check the empty state. Repeat with a second account to check that lists stay private.
+5. Run `npm run typecheck`, `npm run build` and `npm test` in `back/`, and `npm run build` in `front/`. The shopping list PostgreSQL test runs when `TEST_DATABASE_URL` points to a migrated database whose name ends in `_test`. It checks generation, concurrent regeneration, kept purchases and manual items, and ownership, then deletes its temporary data.
