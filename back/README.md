@@ -247,7 +247,7 @@ The schema is defined in SQL in [migrations/](migrations/):
 - `nutrients`, `ingredient_nutrients`: each ingredient's 74 Ciqual nutritional values, including energy, macronutrients, minerals, and vitamins, per 100 g or 100 ml.
 - `recipes`, `recipe_ingredients`, `recipe_steps`: user recipes with quantities, units, and ordered preparation steps.
 - `planned_meals`: one recipe per user, day, and mealtime (`breakfast`, `lunch`, or `dinner`).
-- `shopping_lists`, `shopping_list_items`: shopping lists for a date range, with items that can be checked off.
+- `shopping_lists`, `shopping_list_items`: shopping lists for a date range. Each item stores its purchased state in `is_purchased`.
 
 The database enforces these rules:
 
