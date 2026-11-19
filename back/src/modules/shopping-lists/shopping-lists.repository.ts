@@ -1,6 +1,6 @@
 import type { Pool, PoolClient } from 'pg'
 import type { GeneratedItem, MeasureUnit, PlannedIngredient, PreviousItem } from './shopping-lists.aggregation.ts'
-import type { Period, ShoppingList, ShoppingListItem } from './shopping-lists.schemas.ts'
+import type { ItemParams, Period, ShoppingList, ShoppingListItem, UpdateItem } from './shopping-lists.schemas.ts'
 
 interface ListRow {
   id: string
@@ -112,6 +112,22 @@ export function createShoppingListRepository(pool: Pick<Pool, 'query' | 'connect
       } finally {
         client.release()
       }
+    },
+
+    // The ownership check and the write share one statement: another account's item is not found.
+    async updateItemForUser(userId: string, { listId, itemId }: ItemParams, { isPurchased }: UpdateItem) {
+      const { rows } = await pool.query<ItemRow>(
+        `WITH updated AS (
+           UPDATE shopping_list_items i SET is_purchased = $4
+           FROM shopping_lists l
+           WHERE i.id = $3 AND i.shopping_list_id = $2 AND l.id = i.shopping_list_id AND l.user_id = $1
+           RETURNING i.*
+         )
+         SELECT u.id, u.ingredient_id, u.label, g.category, u.quantity, u.unit, u.is_purchased, u.is_manual
+         FROM updated u LEFT JOIN ingredients g ON g.id = u.ingredient_id`,
+        [userId, listId, itemId, isPurchased],
+      )
+      return rows[0] ? toItem(rows[0]) : null
     },
   }
 }

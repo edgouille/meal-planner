@@ -40,6 +40,13 @@ function fixture(repository?: ShoppingListRepository) {
       lists.set(key, list)
       return list
     },
+    async updateItemForUser(userId, { listId, itemId }, { isPurchased }) {
+      const list = [...lists.entries()].find(([key, value]) => key.startsWith(`${userId}:`) && value.id === listId)?.[1]
+      const item = list?.items.find(candidate => candidate.id === itemId)
+      if (!item) return null
+      item.isPurchased = isPurchased
+      return item
+    },
   }
   return request(createApp({ modules: [createShoppingListsModule(repository ?? memory, requireAuthentication(tokens))], logger: () => {} }))
 }
@@ -67,6 +74,33 @@ test('isolates accounts and returns an empty list when nothing is planned', asyn
   assert.deepEqual(empty.body.data.items, [])
 })
 
+test('checks and unchecks an owned item and keeps the state', async () => {
+  const api = fixture()
+  const auth = await bearer()
+  const list = (await api.post('/api/shopping-lists/generate').set('Authorization', auth).send(week).expect(201)).body.data
+  const item = list.items[0]
+  const path = `/api/shopping-lists/${list.id}/items/${item.id}`
+  const checked = await api.patch(path).set('Authorization', auth).send({ isPurchased: true }).expect(200)
+  assert.deepEqual(checked.body, { data: { ...item, isPurchased: true } })
+  assert.equal(checked.headers['cache-control'], 'no-store')
+  const stored = (await api.get('/api/shopping-lists').query(week).set('Authorization', auth).expect(200)).body.data
+  assert.equal(stored.items[0].isPurchased, true)
+  await api.patch(path).set('Authorization', auth).send({ isPurchased: false }).expect(200)
+    .expect(({ body }) => assert.equal(body.data.isPurchased, false))
+
+  // Another account cannot read or change the item, and unknown items are not found.
+  await api.patch(path).set('Authorization', await bearer(accountB)).send({ isPurchased: true }).expect(404)
+    .expect(({ body }) => assert.equal(body.error.code, 'ITEM_NOT_FOUND'))
+  await api.patch(`/api/shopping-lists/${list.id}/items/${randomUUID()}`).set('Authorization', auth).send({ isPurchased: true }).expect(404)
+  await api.patch(`/api/shopping-lists/${randomUUID()}/items/${item.id}`).set('Authorization', auth).send({ isPurchased: true }).expect(404)
+
+  for (const body of [{}, { isPurchased: 'yes' }, { isPurchased: true, label: 'Autre' }]) {
+    await api.patch(path).set('Authorization', auth).send(body).expect(400)
+  }
+  await api.patch(`/api/shopping-lists/invalid/items/${item.id}`).set('Authorization', auth).send({ isPurchased: true }).expect(400)
+  await api.patch(path).send({ isPurchased: true }).expect(401)
+})
+
 test('rejects invalid periods, foreign fields and missing authentication', async () => {
   const api = fixture()
   const auth = await bearer()
@@ -83,7 +117,7 @@ test('rejects invalid periods, foreign fields and missing authentication', async
 
 test('unexpected shopping list failures use the shared sanitized error response', async () => {
   const fail = async () => { throw new Error('secret SQL') }
-  const api = fixture({ listPlannedIngredients: fail, findForPeriod: fail, replaceForPeriod: fail })
+  const api = fixture({ listPlannedIngredients: fail, findForPeriod: fail, replaceForPeriod: fail, updateItemForUser: fail })
   const response = await api.post('/api/shopping-lists/generate').set('Authorization', await bearer()).send(week).expect(500)
   assert.equal(response.body.error.code, 'INTERNAL_ERROR')
   assert.doesNotMatch(JSON.stringify(response.body), /secret|SQL/)
@@ -116,7 +150,10 @@ test('PostgreSQL generates from owned planned meals, replaces the period list an
 
     // A manual item and a purchase survive regeneration; a second list never accumulates.
     const chickpeaItem = first.items.find((item: ShoppingList['items'][number]) => item.ingredientId === chickpeas)
-    await pool.query('UPDATE shopping_list_items SET is_purchased = true WHERE id = $1', [chickpeaItem.id])
+    const itemPath = `/api/shopping-lists/${first.id}/items/${chickpeaItem.id}`
+    await api.patch(itemPath).set('Authorization', await bearer(accountB)).send({ isPurchased: true }).expect(404)
+    const patched = await api.patch(itemPath).set('Authorization', auth).send({ isPurchased: true }).expect(200)
+    assert.deepEqual(patched.body.data, { ...chickpeaItem, isPurchased: true })
     await pool.query(`INSERT INTO shopping_list_items (shopping_list_id, label, is_manual) VALUES ($1, 'Éponges', true)`, [first.id])
     const [second] = await Promise.all([
       api.post('/api/shopping-lists/generate').set('Authorization', auth).send(week).expect(201),

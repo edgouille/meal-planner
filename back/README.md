@@ -379,6 +379,7 @@ A shopping list covers a period of at most 31 days, usually one week. It is gene
 | --- | --- | --- |
 | `GET /api/shopping-lists` | Required `startDate` and `endDate` query fields, inclusive `YYYY-MM-DD` dates | `200 { "data": { ...list } }` for the list last generated for exactly this period, or `200 { "data": null }`. |
 | `POST /api/shopping-lists/generate` | `{ "startDate": "2026-11-16", "endDate": "2026-11-22" }` | `201 { "data": { ...list } }`. The list is empty when no meal is planned. |
+| `PATCH /api/shopping-lists/:listId/items/:itemId` | `{ "isPurchased": true }` | `200 { "data": { ...item } }`. An item that is missing or belongs to another account's list returns `404 ITEM_NOT_FOUND`. |
 
 A list has this shape:
 

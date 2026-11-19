@@ -29,9 +29,15 @@ export const shoppingListSchema = z.object({
   items: z.array(shoppingListItemSchema),
 })
 
+export const itemParams = z.strictObject({ listId: z.uuid(), itemId: z.uuid() })
+export const updateItemBody = z.strictObject({ isPurchased: z.boolean() })
+export const shoppingListItemResponseSchema = z.object({ data: shoppingListItemSchema })
+
 export const shoppingListResponseSchema = z.object({ data: shoppingListSchema })
 export const optionalShoppingListResponseSchema = z.object({ data: shoppingListSchema.nullable() })
 
 export type Period = z.output<typeof periodSchema>
 export type ShoppingList = z.output<typeof shoppingListSchema>
 export type ShoppingListItem = z.output<typeof shoppingListItemSchema>
+export type ItemParams = z.output<typeof itemParams>
+export type UpdateItem = z.output<typeof updateItemBody>

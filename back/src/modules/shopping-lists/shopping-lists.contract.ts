@@ -1,5 +1,7 @@
 import { errorResponseSchema } from '../../shared/http/errors.ts'
-import { optionalShoppingListResponseSchema, periodSchema, shoppingListResponseSchema } from './shopping-lists.schemas.ts'
+import {
+  itemParams, optionalShoppingListResponseSchema, periodSchema, shoppingListItemResponseSchema, shoppingListResponseSchema, updateItemBody,
+} from './shopping-lists.schemas.ts'
 
 export const shoppingListsBasePath = '/api/shopping-lists'
 const errors = {
@@ -20,5 +22,12 @@ export const shoppingListsContract = {
       + 'Purchased items stay purchased when their quantity does not increase; manual items are kept.',
     request: { body: periodSchema },
     responses: { ...errors, 201: { description: 'List generated. It is empty when no meal is planned.', schema: shoppingListResponseSchema } },
+  },
+  updateItem: {
+    method: 'patch', path: '/:listId/items/:itemId', operationId: 'updateShoppingListItem', tags: ['Shopping lists'], security: [{ bearerAuth: [] }],
+    description: 'Mark an item of an owned list as purchased or not purchased.',
+    request: { params: itemParams, body: updateItemBody },
+    responses: { ...errors, 200: { description: 'Item updated.', schema: shoppingListItemResponseSchema },
+      404: { description: 'Item not found in an owned list.', schema: errorResponseSchema } },
   },
 } as const

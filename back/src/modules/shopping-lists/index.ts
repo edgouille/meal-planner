@@ -14,8 +14,9 @@ export function createShoppingListsModule(repository: ShoppingListRepository, au
   const router = Router()
   router.use(authenticate)
   const controller = createShoppingListController(createShoppingListService(repository))
-  const { current, generate } = shoppingListsContract
+  const { current, generate, updateItem } = shoppingListsContract
   router[current.method](current.path, validateRequest(current.request), controller.current)
   router[generate.method](generate.path, validateRequest(generate.request), controller.generate)
+  router[updateItem.method](updateItem.path, validateRequest(updateItem.request), controller.updateItem)
   return { basePath: shoppingListsBasePath, router }
 }
