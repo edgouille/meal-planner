@@ -1,10 +1,9 @@
 import { useEffect, useId, useState, type FormEvent } from 'react'
-import { BrandMark } from '../../../shared/ui/BrandMark.tsx'
 import { RecipeCard } from '../components/RecipeCard.tsx'
 import { useRecipes } from '../hooks/useRecipes.ts'
 import styles from './RecipesPage.module.css'
 
-export function RecipesPage({ onSignOut }: { onSignOut: () => void }) {
+export function RecipesPage() {
   const { load, page, query, changePage, search, retry } = useRecipes()
   const [draft, setDraft] = useState('')
   const searchId = useId()
@@ -25,21 +24,6 @@ export function RecipesPage({ onSignOut }: { onSignOut: () => void }) {
 
   return (
     <div>
-      <header className={styles.header}>
-        <div className={styles.headerInner}>
-          <a className={styles.brand} href="/" aria-label="MealPlanner, accueil">
-            <BrandMark />
-            <span className={styles.brandName}>Meal<span>Planner</span></span>
-          </a>
-          <nav className={styles.actions} aria-label="Navigation du compte">
-            <a className={styles.headerLink} href="/">Accueil</a>
-            <a className={styles.headerLink} href="/planning">Mon planning</a>
-            <a className={styles.headerLink} href="/parametres">Paramètres</a>
-            <button className={styles.headerLink} type="button" onClick={onSignOut}>Se déconnecter</button>
-          </nav>
-        </div>
-      </header>
-
       <main className={styles.main}>
         <p className={styles.kicker}>Votre carnet de cuisine</p>
         <h1 className={styles.title}>Mes recettes</h1>

@@ -5,22 +5,20 @@ import { Hero } from '../components/Hero.tsx'
 import { HowItWorks } from '../components/HowItWorks.tsx'
 import { NutritionHighlight } from '../components/NutritionHighlight.tsx'
 import { SiteFooter } from '../components/SiteFooter.tsx'
-import { SiteHeader, type SiteHeaderProps } from '../components/SiteHeader.tsx'
 
-export function HomePage(props: SiteHeaderProps) {
+export function HomePage({ signedIn = false }: { signedIn?: boolean }) {
   useEffect(() => {
     document.title = 'MealPlanner — La semaine à croquer'
   }, [])
 
   return (
     <>
-      <SiteHeader {...props} />
       <main>
-        <Hero signedIn={Boolean(props.userName)} />
+        <Hero signedIn={signedIn} />
         <FeatureList />
         <HowItWorks />
         <NutritionHighlight />
-        {!props.userName && <CallToAction />}
+        {!signedIn && <CallToAction />}
       </main>
       <SiteFooter />
     </>
