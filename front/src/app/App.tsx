@@ -3,9 +3,10 @@ import { useEffect } from 'react'
 import { clearSession, getSession, LoginPage, RegisterPage, updateSessionUser, useSession } from '../features/auth/index.ts'
 import { HomePage } from '../features/home/index.ts'
 import { SettingsPage } from '../features/users/index.ts'
-import { RecipesPage } from '../features/recipes/index.ts'
+import { RecipesPage, listRecipes } from '../features/recipes/index.ts'
 import { configureAuthentication } from '../shared/api/client.ts'
 import { navigate, useInternalLinks, usePathname } from '../shared/lib/navigation.ts'
+import { SiteHeader } from '../shared/ui/SiteHeader.tsx'
 
 // Protected API requests carry the session token; a rejected token ends the session, which sends
 // the user back to the sign-in page below.
@@ -41,12 +42,18 @@ function App() {
   if (redirect) return null
   if (pathname === '/connexion') return <LoginPage />
   if (pathname === '/inscription') return <RegisterPage />
-  if (pathname === '/planning') return <MealPlansPage onSignOut={clearSession} />
-  if (pathname === '/recettes') return <RecipesPage onSignOut={clearSession} />
+  let page = <HomePage signedIn={Boolean(session)} />
+  if (pathname === '/planning') page = <MealPlansPage searchRecipes={listRecipes} />
+  if (pathname === '/recettes') page = <RecipesPage />
   if (pathname === '/parametres') {
-    return <SettingsPage onProfileSaved={({ displayName }) => updateSessionUser({ displayName })} onSignOut={clearSession} />
+    page = <SettingsPage onProfileSaved={({ displayName }) => updateSessionUser({ displayName })} />
   }
-  return <HomePage userName={session?.user.displayName} onSignOut={clearSession} />
+  return (
+    <>
+      <SiteHeader userName={session?.user.displayName} currentPath={pathname} onSignOut={clearSession} />
+      {page}
+    </>
+  )
 }
 
 export default App

@@ -14,7 +14,9 @@ export function createMealPlansModule(repository: MealPlanRepository, authentica
   const router = Router()
   router.use(authenticate)
   const controller = createMealPlanController(createMealPlanService(repository))
-  const { list } = mealPlansContract
+  const { list, create, remove } = mealPlansContract
   router[list.method](list.path, validateRequest(list.request), controller.list)
+  router[create.method](create.path, validateRequest(create.request), controller.create)
+  router[remove.method](remove.path, validateRequest(remove.request), controller.remove)
   return { basePath: mealPlansBasePath, router }
 }

@@ -1,5 +1,4 @@
 import { useEffect, useId } from 'react'
-import { BrandMark } from '../../../shared/ui/BrandMark.tsx'
 import { useProfileSettings } from '../hooks/useProfileSettings.ts'
 import type { Profile } from '../users.types.ts'
 import styles from './SettingsPage.module.css'
@@ -7,10 +6,9 @@ import styles from './SettingsPage.module.css'
 export interface SettingsPageProps {
   /** Called with the profile returned by the API after a successful save. */
   onProfileSaved?: (profile: Profile) => void
-  onSignOut?: () => void
 }
 
-export function SettingsPage({ onProfileSaved, onSignOut }: SettingsPageProps) {
+export function SettingsPage({ onProfileSaved }: SettingsPageProps) {
   const id = useId()
   const { load, retry, displayName, changeDisplayName, fieldError, formError, saved, saving, save, inputRef } =
     useProfileSettings(onProfileSaved)
@@ -20,32 +18,7 @@ export function SettingsPage({ onProfileSaved, onSignOut }: SettingsPageProps) {
   }, [])
 
   return (
-    <div className={styles.page}>
-      <header className={styles.header}>
-        <div className={styles.headerInner}>
-          <a className={styles.brand} href="/" aria-label="MealPlanner, accueil">
-            <BrandMark />
-            <span className={styles.brandName}>
-              Meal<span className={styles.brandLight}>Planner</span>
-            </span>
-          </a>
-          <nav className={styles.actions} aria-label="Compte">
-            <a className={styles.headerLink} href="/planning">Mon planning</a>
-            <a className={styles.headerLink} href="/recettes">
-              Mes recettes
-            </a>
-            <a className={styles.headerLink} href="/">
-              Accueil
-            </a>
-            {onSignOut && (
-              <button className={styles.headerLink} type="button" onClick={onSignOut}>
-                Se déconnecter
-              </button>
-            )}
-          </nav>
-        </div>
-      </header>
-
+    <div>
       <main className={styles.main}>
         <h1 className={styles.title}>Paramètres</h1>
         <p className={styles.subtitle}>Consultez votre adresse e-mail et choisissez le nom affiché dans MealPlanner.</p>

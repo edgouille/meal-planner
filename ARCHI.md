@@ -73,7 +73,7 @@ front/src/
     styles/
 ```
 
-- `app/` assembles navigation, page routes, layout, and application-wide providers. The current root `App.tsx` can move here when the application shell is introduced; update its import in `main.tsx` in that PR.
+- `app/` assembles navigation, page routes, layout, and application-wide providers. It mounts `shared/ui/SiteHeader.tsx` once for home, recipes, planning and settings, passing session data, the current path and sign-out behavior. Feature pages render their content without their own copy of this header. Keep navigation order and geometry stable across routes; only the active state changes.
 - `features/<feature>/api/` contains that feature's HTTP calls using the shared client. Components do not call `fetch` directly.
 - `components/` contains feature UI; `pages/` contains page-level composition; `hooks/` contains React behavior and data loading. Keep loading, empty, success, and error states explicit.
 - `recipes.types.ts` contains UI-specific types. API request and response types come from the generated API contract, not copies of database entities.

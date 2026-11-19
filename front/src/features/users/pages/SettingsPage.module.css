@@ -1,76 +1,3 @@
-.page {
-  min-height: 100vh;
-}
-
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(246, 249, 241, 0.88);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--color-line);
-}
-
-.headerInner {
-  max-width: 1160px;
-  height: 68px;
-  margin: 0 auto;
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-display);
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  text-decoration: none;
-}
-
-.brand svg {
-  flex-shrink: 0;
-}
-
-.brandLight {
-  color: var(--color-primary);
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 4px;
-}
-
-.headerLink {
-  height: 40px;
-  padding: 0 14px;
-  display: inline-flex;
-  align-items: center;
-  border: 0;
-  border-radius: var(--radius-button);
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.headerLink:hover {
-  background: var(--color-soft);
-}
-
 .main {
   max-width: 640px;
   margin: 0 auto;
@@ -263,9 +190,7 @@
 }
 
 .primary:focus-visible,
-.secondary:focus-visible,
-.headerLink:focus-visible,
-.brand:focus-visible {
+.secondary:focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }
@@ -277,20 +202,6 @@
 }
 
 @media (max-width: 480px) {
-  .headerInner {
-    padding: 0 16px;
-    gap: 8px;
-  }
-
-  .headerLink {
-    padding: 0 10px;
-  }
-
-  /* Keep the logo; the link keeps its accessible name through aria-label. */
-  .brandName {
-    display: none;
-  }
-
   .main {
     padding: 32px 16px 48px;
   }

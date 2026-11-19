@@ -39,6 +39,11 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Keep centered navigation in place when a route does not need vertical scrolling. */
+html {
+  scrollbar-gutter: stable;
+}
+
 *,
 *::before,
 *::after {

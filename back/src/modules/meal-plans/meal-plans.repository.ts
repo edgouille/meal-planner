@@ -1,5 +1,5 @@
 import type { Pool } from 'pg'
-import type { MealPlan, MealPlanQuery } from './meal-plans.schemas.ts'
+import type { CreateMeal, MealPlan, MealPlanQuery } from './meal-plans.schemas.ts'
 
 interface MealRow {
   id: string
@@ -25,6 +25,27 @@ export function createMealPlanRepository(pool: Pick<Pool, 'query'>) {
          ORDER BY p.meal_date, p.moment, p.id`, [userId, startDate, endDate],
       )
       return rows.map(toMeal)
+    },
+
+    async createForUser(userId: string, { recipeId, date, moment }: CreateMeal) {
+      // The ownership check and write share one statement. PostgreSQL arbitrates concurrent slots.
+      const { rows } = await pool.query<MealRow>(
+        `WITH inserted AS (
+           INSERT INTO planned_meals (user_id, recipe_id, meal_date, moment, servings)
+           SELECT user_id, id, $3::date, $4::meal_moment, servings
+           FROM recipes WHERE id = $2 AND user_id = $1
+           RETURNING id, meal_date, moment, servings, recipe_id
+         )
+         SELECT i.id, to_char(i.meal_date, 'YYYY-MM-DD') AS date, i.moment, i.servings, i.recipe_id, r.title
+         FROM inserted i JOIN recipes r ON r.id = i.recipe_id`,
+        [userId, recipeId, date, moment],
+      )
+      return rows[0] ? toMeal(rows[0]) : null
+    },
+
+    async deleteForUser(userId: string, id: string) {
+      const result = await pool.query('DELETE FROM planned_meals WHERE id = $1 AND user_id = $2 RETURNING id', [id, userId])
+      return result.rows.length > 0
     },
   }
 }
