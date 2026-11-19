@@ -49,7 +49,7 @@ Navigation between pages uses a small History API helper (`src/shared/lib/naviga
 
 ## Recipe browsing
 
-On the home page, signed-in users get account navigation (recipes/settings) instead of presentation links. The header stays on one row on desktop, with two dedicated rows on small screens and an accessible icon-only sign-out button. The hero links to their recipes; account-creation prompts are shown only to signed-out visitors.
+The application shell mounts one shared `SiteHeader` for home, recipes, planning and settings. Its logo, navigation and account actions stay in the same positions across routes; `aria-current` and a highlight identify the current page. Settings use a labeled gear icon, and sign-out uses a red icon/button. The header stays on one row on desktop and uses two dedicated rows on small screens. A stable scrollbar gutter prevents horizontal shifts between long and short pages. Feature pages render their content without separate headers. On the home page, the hero links to recipes and account-creation prompts are shown only to signed-out visitors.
 
 Signed-in users can open `/recettes` from the home page or account settings. The page calls authenticated `GET /api/recipes` through the shared API client, shows recipe titles and descriptions in cards, and paginates in groups of 20. Preparation time and servings are read-only metadata; missing optional values have explicit fallbacks.
 

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { BrandMark } from '../../../shared/ui/BrandMark.tsx'
 import { listMeals, removeMeal } from '../api/meal-plans.api.ts'
 import { RecipePicker, type RecipePickerResult, type SearchRecipes } from '../components/RecipePicker.tsx'
 import { currentMonday, dateKey, shiftDays } from '../meal-plans.dates.ts'
@@ -15,7 +14,7 @@ const dayLabel = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numer
 const rangeLabel = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
 type Load = { key: string; status: 'loading' | 'error' | 'ready'; meals?: PlannedMeal[] }
 
-export function MealPlansPage({ onSignOut, searchRecipes }: { onSignOut: () => void; searchRecipes: SearchRecipes }) {
+export function MealPlansPage({ searchRecipes }: { searchRecipes: SearchRecipes }) {
   const [monday, setMonday] = useState(currentMonday)
   const [attempt, setAttempt] = useState(0)
   const [load, setLoad] = useState<Load>()
@@ -90,13 +89,6 @@ export function MealPlansPage({ onSignOut, searchRecipes }: { onSignOut: () => v
   }
 
   return <div>
-    <header className={styles.header}><div className={styles.headerInner}>
-      <a className={styles.brand} href="/" aria-label="MealPlanner, accueil"><BrandMark /><span>MealPlanner</span></a>
-      <nav className={styles.headerActions} aria-label="Navigation du compte">
-        <a href="/recettes">Mes recettes</a><a href="/parametres">Paramètres</a>
-        <button type="button" onClick={onSignOut}>Se déconnecter</button>
-      </nav>
-    </div></header>
     <main className={styles.main}>
       <p className={styles.kicker}>Une semaine à votre goût</p>
       <h1>Mon planning</h1>

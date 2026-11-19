@@ -1,57 +1,3 @@
-.header {
-  border-bottom: 1px solid var(--color-line);
-  background: var(--color-background);
-}
-
-.headerInner {
-  max-width: 1160px;
-  min-height: 76px;
-  margin: 0 auto;
-  padding: 12px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-display);
-  font-size: 19px;
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.brand svg { flex-shrink: 0; }
-.brandName span { color: var(--color-primary); }
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 4px;
-}
-
-.headerLink {
-  min-height: 44px;
-  padding: 8px 12px;
-  display: inline-flex;
-  align-items: center;
-  border: 0;
-  border-radius: var(--radius-button);
-  background: transparent;
-  color: var(--color-ink);
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.headerLink:hover { background: var(--color-soft); }
-
 .main {
   max-width: 1160px;
   margin: 0 auto;
@@ -191,9 +137,6 @@
 }
 
 @media (max-width: 600px) {
-  .headerInner { padding: 10px 16px; gap: 8px; }
-  .brandName { display: none; }
-  .headerLink { padding: 8px; font-size: 13px; }
   .main { padding: 32px 16px 48px; }
   .grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .button { padding: 10px 12px; }
