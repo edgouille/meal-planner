@@ -16,11 +16,11 @@ export function HomePage(props: SiteHeaderProps) {
     <>
       <SiteHeader {...props} />
       <main>
-        <Hero />
+        <Hero signedIn={Boolean(props.userName)} />
         <FeatureList />
         <HowItWorks />
         <NutritionHighlight />
-        <CallToAction />
+        {!props.userName && <CallToAction />}
       </main>
       <SiteFooter />
     </>

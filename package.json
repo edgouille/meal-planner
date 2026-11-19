@@ -1,0 +1,11 @@
+{
+  "name": "meal-planner",
+  "private": true,
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "setup": "node scripts/dev.mjs --setup-only",
+    "db:demo": "npm --prefix back run db:import-ciqual && npm --prefix back run db:seed",
+    "db:down": "npm --prefix back run db:down"
+  }
+}

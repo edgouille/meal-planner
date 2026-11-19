@@ -1,0 +1,37 @@
+import { useEffect, useState } from 'react'
+import { ApiError } from '../../../shared/api/api-error.ts'
+import { listRecipes } from '../api/recipes.api.ts'
+import type { RecipeListResponse } from '../recipes.types.ts'
+
+type LoadState = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ready'; response: RecipeListResponse }
+
+export function useRecipes() {
+  const [load, setLoad] = useState<LoadState>({ status: 'loading' })
+  const [criteria, setCriteria] = useState({ q: '', page: 1 })
+  const [attempt, setAttempt] = useState(0)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    setLoad({ status: 'loading' })
+    listRecipes(criteria, controller.signal).then(
+      response => {
+        if (!controller.signal.aborted) setLoad({ status: 'ready', response })
+      },
+      (error: unknown) => {
+        if (controller.signal.aborted || (error instanceof ApiError && error.status === 401)) return
+        setLoad({ status: 'error', message: error instanceof ApiError && error.status === 0
+          ? 'Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.'
+          : 'Vos recettes n’ont pas pu être chargées. Veuillez réessayer.' })
+      },
+    )
+    return () => controller.abort()
+  }, [criteria, attempt])
+
+  return {
+    load, page: criteria.page, query: criteria.q,
+    changePage: (page: number) => setCriteria(previous => ({ ...previous, page })),
+    // Apply the filter and reset pagination in one update; superseded requests are aborted above.
+    search: (q: string) => setCriteria({ q: q.trim(), page: 1 }),
+    retry: () => setAttempt(value => value + 1),
+  }
+}

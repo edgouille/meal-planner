@@ -22,7 +22,7 @@ The [Figma board: personas and needs overview](https://www.figma.com/board/WucPu
 The project also provides an opportunity to practice software development principles using:
 
 - **Frontend:** React with TypeScript.
-- **Planned backend:** Node.js with TypeScript and Express.
+- **Backend:** Node.js with TypeScript and Express.
 
 Technical goals include:
 
@@ -37,9 +37,19 @@ Technical goals include:
 
 Development will be incremental, starting with an **MVP (Minimum Viable Product)** covering the application's core features. Additional features may follow as needs evolve.
 
-MealPlanner aims to combine an intuitive user experience with a clear, maintainable fullstack architecture. The current repository contains a starter frontend and the PostgreSQL data layer, including migrations, the Ciqual import, and demo data. The HTTP API and user-facing features are still to be implemented.
+MealPlanner aims to combine an intuitive user experience with a clear, maintainable fullstack architecture. The repository provides the public frontend, authentication, profile settings, recipe browsing, and a PostgreSQL data layer with migrations, the Ciqual import, and demo data. Additional business features are still to be implemented.
 
 ## Setup
+
+With Node.js 22 selected and Docker Desktop running, open a terminal at the repository root and run:
+
+```bash
+npm run dev
+```
+
+The launcher creates missing local environment files, generates a JWT key only when missing, installs locked backend/frontend dependencies when their configuration changes, starts PostgreSQL and pgweb, applies pending migrations, and starts both development servers. Existing configuration and application data are preserved. Open [http://localhost:5173](http://localhost:5173). Press Ctrl+C to stop both servers; the database stays running.
+
+Use `npm run setup` to prepare the environment without starting the applications. `npm run db:down` stops the database services while retaining their data. To explicitly load the catalog and recreate the demo account, run `npm run db:demo`; sign in with `demo@mealplanner.local` / `mealplanner-demo`. This demo command replaces that account's existing data, so it is never run automatically.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) for prerequisites, setup instructions, Git conventions, checks, and GitHub rules to configure. Development guidelines are in [GUIDELINES.md](GUIDELINES.md).
 

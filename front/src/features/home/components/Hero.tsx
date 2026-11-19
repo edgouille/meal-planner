@@ -1,7 +1,7 @@
 import styles from './Hero.module.css'
 import { WeekPreview } from './WeekPreview.tsx'
 
-export function Hero() {
+export function Hero({ signedIn = false }: { signedIn?: boolean }) {
   return (
     <section className={styles.hero}>
       <div className={styles.copy}>
@@ -16,8 +16,8 @@ export function Hero() {
           « on mange quoi ce soir ? ».
         </p>
         <div className={styles.ctas}>
-          <a className={styles.primary} href="/inscription">
-            Commencer gratuitement
+          <a className={styles.primary} href={signedIn ? '/recettes' : '/inscription'}>
+            {signedIn ? 'Voir mes recettes' : 'Commencer gratuitement'}
           </a>
           <a className={styles.secondary} href="#etapes">
             Voir comment ça marche

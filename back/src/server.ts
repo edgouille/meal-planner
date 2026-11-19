@@ -7,6 +7,7 @@ import type { ApiModule } from './shared/http/api-module.ts'
 import { createHealthModule } from './modules/health/index.ts'
 import { createAccessTokens, createAuthModule, requireAuthentication } from './modules/auth/index.ts'
 import { createUserRepository, createUsersModule } from './modules/users/index.ts'
+import { createRecipeRepository, createRecipesModule } from './modules/recipes/index.ts'
 
 interface ServerOptions {
   config: RuntimeConfig
@@ -80,7 +81,8 @@ async function main() {
   const users = createUserRepository(pool)
   const auth = createAuthModule(users, tokens)
   const profile = createUsersModule(users, requireAuthentication(tokens))
-  const runtime = await startServer({ config, modules: [health, auth, profile], closeDatabase: () => pool.end() })
+  const recipes = createRecipesModule(createRecipeRepository(pool), requireAuthentication(tokens))
+  const runtime = await startServer({ config, modules: [health, auth, profile, recipes], closeDatabase: () => pool.end() })
   const address = runtime.server.address()
   const port = typeof address === 'object' && address ? address.port : config.port
   console.info(`MealPlanner API listening on http://${config.host}:${port}`)
