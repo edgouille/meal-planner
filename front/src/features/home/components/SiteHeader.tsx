@@ -8,6 +8,7 @@ const links = [
 ]
 
 const accountLinks = [
+  { href: '/planning', label: 'Mon planning' },
   { href: '/recettes', label: 'Mes recettes' },
   { href: '/parametres', label: 'Paramètres' },
 ]

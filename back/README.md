@@ -348,3 +348,21 @@ The demo account uses the same scrypt password format as the authentication modu
 - [Project README](../README.md): product overview, requirements reference, and scope.
 - [Development guidelines](../GUIDELINES.md): conventions shared by the frontend and backend.
 - [Contributing guide](../CONTRIBUTING.md): setup, Git conventions, and preparing a pull request.
+
+## Meal planning — EPIC-02
+
+The protected `/planning` page shows Monday through Sunday with breakfast, lunch and dinner slots. Use the week navigation to move backward, forward or return to the current week.
+
+| Endpoint | Input | Result |
+| --- | --- | --- |
+| `GET /api/meal-plans` | Required `startDate` and `endDate` query fields, inclusive `YYYY-MM-DD` dates | `200 { "data": [...] }`, ordered by date and meal moment. |
+
+The endpoint requires a bearer access token. The API derives ownership from verified authentication. The date range may span up to 31 calendar days and must be ordered. Supported dates run from `0100-01-01` through `9998-12-31`. Moments are `breakfast`, `lunch` and `dinner`. Calendar dates are returned without timezone conversion.
+
+### Checking the planning flow
+
+1. Start the project with the root `npm run dev`. Load demo data with `npm run db:demo` on a local database if recipes are needed. Sign in with the demo credentials documented above.
+2. Open **Mon planning** and check that each recipe is on the right day and meal slot.
+3. Navigate to the previous and next weeks, then return using **Cette semaine**. Check an empty week and a narrow mobile viewport.
+4. Repeat with a second account to verify that the first account's meals stay private.
+5. Run `npm run typecheck`, `npm run build` and `npm test` in `back/`, and `npm run build` in `front/`. The optional PostgreSQL test uses `TEST_DATABASE_URL` pointing to a migrated database whose name ends in `_test`. Its fixtures run inside a rolled-back transaction.

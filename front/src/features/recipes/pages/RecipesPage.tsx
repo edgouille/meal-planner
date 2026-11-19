@@ -33,6 +33,7 @@ export function RecipesPage({ onSignOut }: { onSignOut: () => void }) {
           </a>
           <nav className={styles.actions} aria-label="Navigation du compte">
             <a className={styles.headerLink} href="/">Accueil</a>
+            <a className={styles.headerLink} href="/planning">Mon planning</a>
             <a className={styles.headerLink} href="/parametres">Paramètres</a>
             <button className={styles.headerLink} type="button" onClick={onSignOut}>Se déconnecter</button>
           </nav>

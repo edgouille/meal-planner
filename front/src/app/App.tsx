@@ -1,3 +1,4 @@
+import { MealPlansPage } from '../features/meal-plans/index.ts'
 import { useEffect } from 'react'
 import { clearSession, getSession, LoginPage, RegisterPage, updateSessionUser, useSession } from '../features/auth/index.ts'
 import { HomePage } from '../features/home/index.ts'
@@ -17,7 +18,7 @@ configureAuthentication({
 })
 
 const authPaths = ['/connexion', '/inscription']
-const protectedPaths = ['/parametres', '/recettes']
+const protectedPaths = ['/parametres', '/recettes', '/planning']
 const knownPaths = ['/', ...authPaths, ...protectedPaths]
 
 function redirectFor(pathname: string, signedIn: boolean) {
@@ -40,6 +41,7 @@ function App() {
   if (redirect) return null
   if (pathname === '/connexion') return <LoginPage />
   if (pathname === '/inscription') return <RegisterPage />
+  if (pathname === '/planning') return <MealPlansPage onSignOut={clearSession} />
   if (pathname === '/recettes') return <RecipesPage onSignOut={clearSession} />
   if (pathname === '/parametres') {
     return <SettingsPage onProfileSaved={({ displayName }) => updateSessionUser({ displayName })} onSignOut={clearSession} />
