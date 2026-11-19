@@ -7,15 +7,15 @@ Prerequisites: Git, Node.js 22, and npm. The `.nvmrc` file specifies the Node.js
 From the repository root:
 
 ```bash
-cd front
-npm ci
 npm run dev
 ```
 
-Open the URL displayed by Vite. `npm ci` installs the versions recorded in `package-lock.json`. To add or update a dependency, use `npm install` and include changes to both `package.json` and `package-lock.json` in your contribution.
+Start Docker Desktop first. The root launcher prepares missing local configuration, installs locked backend/frontend dependencies, starts database services, applies pending migrations, and runs both applications. Open the frontend URL printed after the readiness checks (by default `http://localhost:5173`). Ctrl+C stops both development servers. See [README.md](README.md#setup) for setup-only, demo data and database shutdown commands.
+
+`npm ci` installs the versions recorded in each application's `package-lock.json`. To add or update a dependency, use `npm install` in that application and include changes to both its `package.json` and `package-lock.json` in your contribution.
 
 
-The backend already provides PostgreSQL, migrations, the Ciqual import, demo data, and a connection pool. Its HTTP API is not implemented yet. Read [back/README.md](back/README.md) for database setup and [ARCHI.md](ARCHI.md) for the target frontend and backend structure. The current frontend does not require a `.env` file.
+The backend provides health, authentication, profile and recipe-list APIs alongside PostgreSQL, migrations, the Ciqual import, demo data and a shared connection pool. Read [back/README.md](back/README.md) for setup details and [ARCHI.md](ARCHI.md) for the frontend and backend structure. Generated local environment files and JWT keys must never be committed.
 
 ## Branches and commits
 
