@@ -72,3 +72,5 @@ Signed-in users can open `/planning` from **Mon planning** in the account naviga
 ## Shopping list
 
 Signed-in users can open `/courses` from **Mes courses** in the account navigation. The page shows the shopping list of a Monday-to-Sunday week, with the same week navigation as the planning. **Générer la liste de courses** builds the list from the week's planned meals. **Mettre à jour depuis le planning** rebuilds it after the planning changes. Items are grouped by aisle (Ciqual subgroup), with quantities in French units (`2 pièces`, `3 c. à soupe`). The week helpers used by both pages live in `src/shared/lib/week.ts`. The API and aggregation rules are documented in [the backend README](../back/README.md#shopping-lists--epic-03).
+
+Each item has a checkbox to mark it as purchased. The box changes immediately and the change is sent with `PATCH /api/shopping-lists/:listId/items/:itemId`. If the request fails, the box switches back and an error names the product. Purchased items are struck through, and a progress bar counts them. The state is stored by the API, so it survives a reload and an update from the planning, as long as the quantity has not increased.

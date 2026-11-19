@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { currentMonday, dateKey, shiftDays } from '../../../shared/lib/week.ts'
-import { generateShoppingList, getShoppingList } from '../api/shopping-lists.api.ts'
+import { generateShoppingList, getShoppingList, updateShoppingListItem } from '../api/shopping-lists.api.ts'
+import { PurchaseProgress } from '../components/PurchaseProgress.tsx'
 import { ShoppingItems } from '../components/ShoppingItems.tsx'
-import type { ShoppingList } from '../shopping-lists.types.ts'
+import type { ShoppingList, ShoppingListItem } from '../shopping-lists.types.ts'
 import styles from './ShoppingListPage.module.css'
 
 const rangeLabel = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -16,6 +17,7 @@ export function ShoppingListPage() {
   const [generating, setGenerating] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const [saving, setSaving] = useState<ReadonlySet<string>>(new Set())
   const start = dateKey(monday)
   const end = dateKey(shiftDays(monday, 6))
   const current = load?.key === start ? load : undefined
@@ -55,6 +57,33 @@ export function ShoppingListPage() {
     }
   }
 
+  function setPurchased(listId: string, itemId: string, isPurchased: boolean) {
+    setLoad(previous => previous?.list?.id === listId
+      ? { ...previous, list: { ...previous.list, items: previous.list.items.map(item => item.id === itemId ? { ...item, isPurchased } : item) } }
+      : previous)
+  }
+
+  // The box changes immediately; it switches back if the API rejects the change.
+  async function togglePurchased(item: ShoppingListItem, isPurchased: boolean) {
+    if (!list || saving.has(item.id)) return
+    const listId = list.id
+    setError('')
+    setMessage('')
+    setPurchased(listId, item.id, isPurchased)
+    setSaving(previous => new Set(previous).add(item.id))
+    try {
+      await updateShoppingListItem(listId, item.id, isPurchased)
+    } catch {
+      setPurchased(listId, item.id, !isPurchased)
+      setError(`« ${item.label} » n’a pas pu être mis à jour. Vérifiez votre connexion et réessayez.`)
+    } finally {
+      setSaving(previous => {
+        const next = new Set(previous)
+        next.delete(item.id)
+        return next
+      })
+    }
+  }
 
   return <main className={styles.main}>
     <p className={styles.kicker}>Le planning, version cabas</p>
@@ -92,13 +121,16 @@ export function ShoppingListPage() {
       {list && <div className={styles.card}>
         <div className={styles.toolbar}>
           <p className={styles.meta}>Générée le {generatedLabel.format(new Date(list.generatedAt))}</p>
-          <button className={styles.button} onClick={() => void generate()} disabled={generating}>
+          <button className={styles.button} onClick={() => void generate()} disabled={generating || saving.size > 0}>
             {generating ? 'Mise à jour…' : 'Mettre à jour depuis le planning'}
           </button>
         </div>
         {list.items.length === 0
           ? <p className={styles.notice}>Aucun repas n’est planifié cette semaine. Ajoutez des recettes à <a href="/planning">votre planning</a>, puis mettez la liste à jour.</p>
-          : <ShoppingItems list={list} />}
+          : <>
+            <PurchaseProgress items={list.items} />
+            <ShoppingItems list={list} disabled={generating} onToggle={(item, isPurchased) => void togglePurchased(item, isPurchased)} />
+          </>}
       </div>}
     </section>
   </main>

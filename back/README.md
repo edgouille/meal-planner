@@ -402,3 +402,11 @@ Generation rules (`shopping-lists.aggregation.ts`):
 - `piece`, `bunch`, `tbsp`, `tsp` and `pinch` are only added to the same unit, so an ingredient can appear on two lines. Pieces and bunches are rounded up to whole units.
 - Items are sorted by Ciqual subgroup (`category`), so products of the same aisle stay together, then by name.
 - Generating a period again replaces its previous list in a single transaction. An item stays purchased when its quantity has not increased, and items added by hand (`isManual`) are kept.
+
+### Checking the shopping flow
+
+1. Start the project with the root `npm run dev` and sign in with the demo account. Plan a few recipes for the current week in **Mon planning**.
+2. Open **Mes courses** and select **Générer la liste de courses**. Check that quantities add up across meals (for example, a recipe planned twice doubles its ingredients) and that items are grouped by aisle.
+3. Check two items, reload, and check that they are still purchased. Add a meal to the planning, select **Mettre à jour depuis le planning**, and check that items whose quantity did not increase stay purchased.
+4. Navigate to a week without a list to check the empty state. Repeat with a second account to check that lists stay private.
+5. Run `npm run typecheck`, `npm run build` and `npm test` in `back/`, and `npm run build` in `front/`. The shopping list PostgreSQL test runs when `TEST_DATABASE_URL` points to a migrated database whose name ends in `_test`. It checks generation, concurrent regeneration, kept purchases and manual items, and ownership, then deletes its temporary data.
