@@ -1,8 +1,21 @@
 import { errorResponseSchema } from '../../shared/http/errors.ts'
-import { recipeListQuery, recipeListResponseSchema } from './recipes.schemas.ts'
+import { recipeListQuery, recipeListResponseSchema, recipeParamsSchema, recipeDetailsResponseSchema } from './recipes.schemas.ts'
 
 export const recipesBasePath = '/api/recipes'
 export const recipesContract = {
+  get: {
+    method: 'get', path: '/:id', operationId: 'getRecipe', tags: ['Recipes'],
+    security: [{ bearerAuth: [] }],
+    description: 'Get a recipe owned by the signed-in user, including its ingredients and ordered steps.',
+    request: { params: recipeParamsSchema },
+    responses: {
+      200: { description: 'Recipe details.', schema: recipeDetailsResponseSchema },
+      400: { description: 'Invalid recipe ID (VALIDATION_ERROR).', schema: errorResponseSchema },
+      401: { description: 'Missing, invalid, or expired access token (UNAUTHENTICATED).', schema: errorResponseSchema },
+      404: { description: 'Recipe not found (RECIPE_NOT_FOUND).', schema: errorResponseSchema },
+      500: { description: 'Unexpected failure (INTERNAL_ERROR).', schema: errorResponseSchema },
+    },
+  },
   list: {
     method: 'get', path: '/', operationId: 'listRecipes', tags: ['Recipes'],
     security: [{ bearerAuth: [] }],
