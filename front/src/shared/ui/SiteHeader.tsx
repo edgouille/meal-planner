@@ -34,7 +34,7 @@ export function SiteHeader({ userName, currentPath, onSignOut }: SiteHeaderProps
 
         <nav className={styles.nav} aria-label={userName ? 'Navigation principale' : 'Sections de la page'}>
           {(userName ? accountLinks : links).map((link) => (
-            <a key={link.href} href={link.href} aria-current={link.href === currentPath ? 'page' : undefined}>
+            <a key={link.href} href={link.href} aria-current={(link.href === currentPath || (link.href === '/recettes' && currentPath.startsWith('/recettes/'))) ? 'page' : undefined}>
               {link.label}
             </a>
           ))}

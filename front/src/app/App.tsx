@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { clearSession, getSession, LoginPage, RegisterPage, updateSessionUser, useSession } from '../features/auth/index.ts'
 import { HomePage } from '../features/home/index.ts'
 import { SettingsPage } from '../features/users/index.ts'
-import { RecipesPage, listRecipes } from '../features/recipes/index.ts'
+import { RecipesPage, RecipeDetailsPage, listRecipes } from '../features/recipes/index.ts'
 import { ShoppingListPage } from '../features/shopping-lists/index.ts'
 import { configureAuthentication } from '../shared/api/client.ts'
 import { navigate, useInternalLinks, usePathname } from '../shared/lib/navigation.ts'
@@ -24,9 +24,10 @@ const protectedPaths = ['/parametres', '/recettes', '/planning', '/courses']
 const knownPaths = ['/', ...authPaths, ...protectedPaths]
 
 function redirectFor(pathname: string, signedIn: boolean) {
+  const isRecipeDetails = /^\/recettes\/[^/]+$/.test(pathname)
   if (signedIn && authPaths.includes(pathname)) return '/'
-  if (!signedIn && protectedPaths.includes(pathname)) return '/connexion'
-  if (!knownPaths.includes(pathname)) return '/'
+  if (!signedIn && (protectedPaths.includes(pathname) || isRecipeDetails)) return '/connexion'
+  if (!knownPaths.includes(pathname) && !isRecipeDetails) return '/'
 }
 
 function App() {
@@ -46,6 +47,8 @@ function App() {
   let page = <HomePage signedIn={Boolean(session)} />
   if (pathname === '/planning') page = <MealPlansPage searchRecipes={listRecipes} />
   if (pathname === '/recettes') page = <RecipesPage />
+  const recipeMatch = pathname.match(/^\/recettes\/([^/]+)$/)
+  if (recipeMatch) page = <RecipeDetailsPage id={recipeMatch[1]} />
   if (pathname === '/courses') page = <ShoppingListPage />
   if (pathname === '/parametres') {
     page = <SettingsPage onProfileSaved={({ displayName }) => updateSessionUser({ displayName })} />
