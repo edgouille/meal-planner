@@ -4,6 +4,7 @@ import styles from './RecipeCard.module.css'
 export function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
   return (
     <article className={styles.card}>
+      <a className={styles.link} href={`/recettes/${recipe.id}`} aria-label={`Voir la recette ${recipe.title}`} />
       <div className={styles.mark} aria-hidden="true">
         <svg viewBox="0 0 32 32" fill="none" width="30" height="30">
           <path d="M25 6C12 5 5 11 8 20c9 3 15-4 17-14Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
