@@ -18,7 +18,12 @@ const recipe = (title: string): RecipeSummary => ({ id: randomUUID(), title, des
 function fixture(repository?: RecipeRepository) {
   const stored = new Map<string, RecipeSummary[]>([[accountA, [recipe('Salade verte'), recipe('Soupe du jardin'), recipe('Tarte aux pommes')]], [accountB, [recipe('Recette privée')]]])
   const calls: string[] = []
-  const memory: RecipeRepository = { async listForUser(userId, { q, page, pageSize }) {
+  const memory: RecipeRepository = {
+    async findForUser(id, userId) {
+      const found = (stored.get(userId) ?? []).find(row => row.id === id)
+      return found ? { ...found, ingredients: [], steps: [] } : null
+    },
+    async listForUser(userId, { q, page, pageSize }) {
     calls.push(userId)
     const matches = (stored.get(userId) ?? []).filter(row => row.title.toLowerCase().includes(q.toLowerCase()))
     return { data: matches.slice((page - 1) * pageSize, page * pageSize), total: matches.length }
@@ -90,7 +95,7 @@ test('requires valid authentication before query validation', async () => {
 })
 
 test('sanitizes repository failures without exposing SQL or account data', async () => {
-  const { api } = fixture({ async listForUser() { throw new Error('SELECT password FROM secret_table') } })
+  const { api } = fixture({ async findForUser() { throw new Error('SELECT password FROM secret_table') }, async listForUser() { throw new Error('SELECT password FROM secret_table') } })
   const response = await api.get('/api/recipes').set('Authorization', await bearer()).expect(500)
   assert.equal(response.body.error.code, 'INTERNAL_ERROR')
   assert.doesNotMatch(JSON.stringify(response.body), /SELECT|password|secret_table|stack/)
@@ -128,6 +133,65 @@ test('PostgreSQL scopes rows and counts to each account, with literal searches a
     const b = await api.get('/api/recipes').set('Authorization', await bearer(accountB)).expect(200)
     assert.equal(b.body.pagination.total, 1)
     assert.equal(b.body.data[0].title, 'Soupe privée')
+  } finally {
+    await client.query('ROLLBACK').catch(() => {})
+    client.release()
+    await pool.end()
+  }
+})
+
+
+test('returns owned recipe details and hides missing and other users recipes', async () => {
+  const { api, stored } = fixture()
+  const authorization = await bearer()
+  const owned = stored.get(accountA)![0]
+  const response = await api.get(`/api/recipes/${owned.id}`).set('Authorization', authorization).expect(200)
+  assert.deepEqual(response.body, { data: { ...owned, ingredients: [], steps: [] } })
+  assert.equal(response.headers['cache-control'], 'no-store')
+  const missing = await api.get(`/api/recipes/${randomUUID()}`).set('Authorization', authorization).expect(404)
+  const privateRecipe = await api.get(`/api/recipes/${stored.get(accountB)![0].id}`).set('Authorization', authorization).expect(404)
+  assert.deepEqual(missing.body, privateRecipe.body)
+  assert.equal(missing.body.error.code, 'RECIPE_NOT_FOUND')
+  assert.ok(errorResponseSchema.safeParse(missing.body).success)
+})
+
+test('validates details IDs after authentication and sanitizes failures', async () => {
+  const { api } = fixture()
+  const invalid = await api.get('/api/recipes/not-a-uuid').set('Authorization', await bearer()).expect(400)
+  assert.equal(invalid.body.error.code, 'VALIDATION_ERROR')
+  assert.ok(errorResponseSchema.safeParse(invalid.body).success)
+  for (const token of ['', 'Bearer invalid']) {
+    const response = await api.get('/api/recipes/not-a-uuid').set('Authorization', token).expect(401)
+    assert.equal(response.body.error.code, 'UNAUTHENTICATED')
+  }
+  const broken = fixture({ async findForUser() { throw new Error('SELECT secret') }, async listForUser() { throw new Error('unused') } })
+  const error = await broken.api.get(`/api/recipes/${randomUUID()}`).set('Authorization', await bearer()).expect(500)
+  assert.equal(error.body.error.code, 'INTERNAL_ERROR')
+  assert.doesNotMatch(JSON.stringify(error.body), /SELECT|secret|stack/)
+})
+
+test('PostgreSQL returns ordered recipe details only to the owner', { skip: !process.env.TEST_DATABASE_URL }, async () => {
+  const url = new URL(process.env.TEST_DATABASE_URL!)
+  assert.match(url.pathname, /_test$/, 'Use a dedicated database whose name ends in _test.')
+  const pool = new pg.Pool({ connectionString: url.toString(), connectionTimeoutMillis: 1000 })
+  const client = await pool.connect()
+  try {
+    await client.query('BEGIN')
+    const a = randomUUID(), b = randomUUID(), id = randomUUID(), apple = randomUUID(), zucchini = randomUUID()
+    await client.query('INSERT INTO users (id, email, display_name, password_hash) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8)',
+      [a, `${a}@example.test`, 'A', 'test', b, `${b}@example.test`, 'B', 'test'])
+    await client.query('INSERT INTO recipes (id, user_id, title, servings) VALUES ($1, $2, $3, $4)', [id, a, 'Test', 2])
+    await client.query('INSERT INTO ingredients (id, name) VALUES ($1, $2), ($3, $4)', [apple, `Apple ${apple}`, zucchini, `Zucchini ${zucchini}`])
+    await client.query('INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit) VALUES ($1, $2, $3, $4), ($1, $5, $6, $7)', [id, zucchini, '2.50', 'piece', apple, '100.25', 'g'])
+    await client.query('INSERT INTO recipe_steps (recipe_id, position, instruction) VALUES ($1, 2, $2), ($1, 1, $3)', [id, 'Second', 'First'])
+    const { api } = fixture(createRecipeRepository(client))
+    const response = await api.get(`/api/recipes/${id}`).set('Authorization', await bearer(a)).expect(200)
+    assert.deepEqual(response.body.data.ingredients, [
+      { ingredientId: apple, name: `Apple ${apple}`, quantity: 100.25, unit: 'g' },
+      { ingredientId: zucchini, name: `Zucchini ${zucchini}`, quantity: 2.5, unit: 'piece' },
+    ])
+    assert.deepEqual(response.body.data.steps, [{ position: 1, instruction: 'First' }, { position: 2, instruction: 'Second' }])
+    await api.get(`/api/recipes/${id}`).set('Authorization', await bearer(b)).expect(404)
   } finally {
     await client.query('ROLLBACK').catch(() => {})
     client.release()

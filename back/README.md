@@ -2,6 +2,12 @@
 
 The MealPlanner backend provides a REST API consumed by the frontend. The API exposes health checks, account registration, and login. PostgreSQL migrations, the Ciqual import, and the demo seed are available as explicit setup commands.
 
+## Recipe details API
+
+`GET /api/recipes/:id` returns the signed-in owner's recipe in a `data` envelope, including ingredients (name, quantity and unit) ordered by name and preparation steps ordered by position. Send `Authorization: Bearer <accessToken>`. The response has `Cache-Control: no-store`.
+
+A malformed UUID returns `400 VALIDATION_ERROR`, missing or invalid authentication returns `401 UNAUTHENTICATED`, and both an unknown recipe and another user's recipe return the same `404 RECIPE_NOT_FOUND`. Unexpected errors return a sanitized `500 INTERNAL_ERROR`. Quantities are JSON numbers. No migration is required.
+
 ## Recipe list API
 
 `GET /api/recipes` lists the signed-in user's recipes (SCRUM-17, part of SCRUM-9 / epic SCRUM-5). Send the existing JWT as `Authorization: Bearer <accessToken>`. The owner is always taken from that token; callers cannot select another user.

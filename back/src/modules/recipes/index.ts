@@ -8,8 +8,8 @@ import { createRecipesService } from './recipes.service.ts'
 export { createRecipeRepository } from './recipes.repository.ts'
 export type { RecipeRepository } from './recipes.repository.ts'
 export { recipesBasePath, recipesContract } from './recipes.contract.ts'
-export { recipeListQuery, recipeSummarySchema, recipeListResponseSchema } from './recipes.schemas.ts'
-export type { RecipeSummary, RecipeListQuery, RecipeListResponse } from './recipes.schemas.ts'
+export { recipeListQuery, recipeSummarySchema, recipeListResponseSchema, recipeParamsSchema, recipeDetailsSchema, recipeDetailsResponseSchema } from './recipes.schemas.ts'
+export type { RecipeSummary, RecipeListQuery, RecipeListResponse, RecipeDetails } from './recipes.schemas.ts'
 
 /** Authentication must verify the token and populate res.locals.auth.userId. */
 export function createRecipesModule(recipes: RecipeRepository, authenticate: RequestHandler): ApiModule {

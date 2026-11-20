@@ -8,5 +8,7 @@ export function createRecipesRouter(service: RecipesService, authenticate: Reque
   const router = Router()
   const { list } = recipesContract
   router[list.method](list.path, authenticate, validateRequest(list.request), createRecipesController(service).list)
+  const { get } = recipesContract
+  router[get.method](get.path, authenticate, validateRequest(get.request), createRecipesController(service).get)
   return router
 }

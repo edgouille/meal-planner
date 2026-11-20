@@ -26,3 +26,15 @@ export const recipeListResponseSchema = z.object({
 export type RecipeListQuery = z.output<typeof recipeListQuery>
 export type RecipeSummary = z.output<typeof recipeSummarySchema>
 export type RecipeListResponse = z.output<typeof recipeListResponseSchema>
+
+export const recipeParamsSchema = z.strictObject({ id: z.uuid() })
+
+export const recipeDetailsSchema = recipeSummarySchema.extend({
+  ingredients: z.array(z.object({
+    ingredientId: z.uuid(), name: z.string(), quantity: z.number().positive(),
+    unit: z.enum(['g', 'kg', 'ml', 'cl', 'l', 'piece', 'tbsp', 'tsp', 'bunch', 'pinch']),
+  })),
+  steps: z.array(z.object({ position: z.number().int().positive(), instruction: z.string() })),
+})
+export const recipeDetailsResponseSchema = z.object({ data: recipeDetailsSchema })
+export type RecipeDetails = z.output<typeof recipeDetailsSchema>
